@@ -41,7 +41,9 @@ yearly check-up and know what they're facing. Venom testing stays as a later mod
 - Every result shows its uncertainty and "see a health worker" thresholds.
 - Data privacy: results belong to the patient. Offline-first.
 
-## Next actions (need WHO sites reachable)
-1. Fetch EDL 4 Tier I in full → `data/who_edl4_tier1.csv` (verbatim, with source and version).
-2. Fetch GHE 2021 cause-specific DALYs for low and lower-middle income groups → rank.
-3. Join them → `docs/04-test-menu.md`: ranked conditions × test method × cost × evidence.
+## Next actions: status 2026-11-02
+1. ✅ EDL 4 Tier I → `data/who_edl4_tier1.csv` (from TRS 1053 on IRIS). WHO's current list is EDL 5, also
+   fetched in full → `data/who_edl5.csv`. See D-007.
+2. ⚠️ GHE 2021 DALYs: blocked (www.who.int). Used GHE 2021 top-10 **deaths** by income group from
+   WHS 2024 Fig. 1.9 instead → `data/who_ghe2021_top10_deaths.csv`.
+3. ✅ Draft join → `docs/04-test-menu.md` (conditions × test × pod method). Cost and evidence columns still open.

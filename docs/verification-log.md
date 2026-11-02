@@ -30,3 +30,20 @@ Run all: `python3 -m pytest` from the repo root.
 - 2026-11-02: Distances from OpenCascade are floats (5e-15, not 0). Compare with a tolerance.
 - 2026-11-02 (design): the cutaway shows ~340 mm of empty space under the bed inside the tub.
   The electronics could move up there to make the pedestal smaller. Open item.
+
+## Phase 2: test menu data (`tests/test_test_menu_data.py`)
+| ID | Test | What it proves | Independent check | Pass criterion | Result |
+|---|---|---|---|---|---|
+| T-001 | `test_edl5_scrape_complete` | e-EDL scrape is complete | Home page id list (1–234) | 234 rows, all with test/setting/assay/specimen; 39 Non-laboratory | ✅ |
+| T-002 | `test_edl4_tier1_transcription_shape` | EDL 4 Tier I transcription has every row | TRS 1053 tables | 39 rows, 11 in I.a | ✅ |
+| T-003 | `test_edl4_row_agrees_with_edl5` (39 cases) | Each hand-transcribed EDL 4 row matches the scraped EDL 5 row it points to | Second official source, second method (scrape vs. hand transcription) | Same test name word and specimen family, or the difference is declared in `edl5_note` | ✅ after 2 notes added (see below) |
+| T-004 | `test_ghe_top10_well_formed` | GHE table has ranks 1–10, no duplicates | Rendered WHS 2024 p. 14 read visually = text extraction | ranks 1..10 per group | ✅ |
+| T-005 | `test_menu_references_exist` | Every menu row points to real data; rows with no EDL test are marked Draft/Out of scope | Data files | all ids Non-laboratory, all causes in GHE table | ✅ |
+| T-006 | `test_every_ghe_cause_addressed` | No top-10 cause is silently dropped | GHE table | menu covers all 13 distinct causes | ✅ |
+| T-007 | `test_parser_reads_minimal_page` | Parser extracts fields and leaves missing ones empty | Hand-written page | exact field values | ✅ |
+
+### Lessons
+- 2026-11-02: T-003 failed on first run for two rows. Both were real changes between editions, not
+  transcription errors: EDL 5 lists HBeAg with serum/plasma (EDL 4: capillary/venous whole blood) and
+  renamed "Sickle cell testing" to "Haemoglobin A, S and C detection". Notes were added to the data, and
+  the test now accepts a mismatch only when the note declares it and names the EDL 5 value.

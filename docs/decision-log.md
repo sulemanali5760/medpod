@@ -52,3 +52,11 @@ Each entry: what we had to decide, the options, what we picked, and why.
 - **Verified:** geometry tests G-000…G-006 pass. **Not yet verified:** structure (FEA), lid strut
   forces, ventilation/heat, component sizes (provisional).
 - Model: `cad/medpod_capsule.py` → `cad/parts/medpod_capsule.step`. Renders: `docs/img/capsule_*.png`.
+
+## D-007 — Test menu built on WHO EDL 5 Non-laboratory list (PROPOSED, needs owner OK)
+- **Date:** 2026-11-02
+- **Proposal:** the plan said "EDL 4 Tier I", but WHO's e-EDL now hosts EDL 5 (© WHO 2025), which replaces
+  tiers with Non-laboratory / Laboratory settings. Build the menu on EDL 5 Non-laboratory (39 tests) and
+  keep EDL 4 Tier I on file for traceability (`data/who_edl4_tier1.csv`).
+- **Why:** it is WHO's current list. Changes between the two are listed in `docs/04-test-menu.md`.
+- **Open:** first cartridge set (proposal: malaria, HIV, HBsAg, anti-HCV, syphilis; glucose/HbA1c, cholesterol, BP).

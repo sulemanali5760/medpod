@@ -8,7 +8,7 @@
 |---|---|---|
 | 0 | Project setup, rules, verified toolchain | ✅ Done |
 | 1 | Capsule design + geometry verification | ✅ Done (structure/thermal next) |
-| 2 | Sensor arm and mounts | ⏳ |
+| 2 | Test menu (owner direction 2026-11-02; was "sensor arm and mounts") | 🔄 Draft v0.1 |
 | 3 | Sensor electronics (ECG, SpO2, BP, cameras, mic) | ⏳ |
 | 4 | Firmware + data capture | ⏳ |
 | 5 | AI triage brain | ⏳ |
@@ -37,9 +37,26 @@ Next, in order:
 
 ## Phase 2 — Test menu (CURRENT, owner direction 2026-11-02)
 General-purpose affordable screening for common LMIC conditions; venom later.
-Plan and sources: `docs/03-test-menu-plan.md`. Start with its "Next actions" (fetch WHO EDL 4 Tier I
-and WHO GHE 2021) once WHO sites are reachable. Capsule structure/thermal work is paused, not dropped.
+Plan: `docs/03-test-menu-plan.md`. Result: **`docs/04-test-menu.md` (Draft v0.1)**, picture `docs/img/test_menu.png`.
+Capsule structure/thermal work is paused, not dropped.
+
+Done (2026-11-02):
+- WHO e-EDL scraped in full (234 tests; 39 Non-laboratory) → `data/who_edl5.csv` (parser `tools/who_edl.py`).
+  The site now hosts **EDL 5**, not EDL 4.
+- EDL 4 Tier I (39 rows) transcribed from WHO TRS 1053 → `data/who_edl4_tier1.csv`, cross-checked row by row against EDL 5.
+- GHE 2021 top-10 causes of death, LIC and LMIC (WHS 2024 Fig. 1.9) → `data/who_ghe2021_top10_deaths.csv`.
+- Menu joined → `data/test_menu.csv`; tests T-001…T-007 pass (`tests/test_test_menu_data.py`).
+
+Next, in order:
+1. Owner: approve D-007 (use EDL 5) and the proposed first cartridge set.
+2. GHE 2021 **DALYs** by income group (needs www.who.int / cdn.who.int allowed, or the owner downloads the xlsx).
+3. Cost per test: Global Fund / UNICEF supply catalogue price lists.
+4. Accuracy per test: extract e-EDL "Summary of Evidence Evaluation" for the chosen cartridges.
+5. Referral thresholds from WHO guidelines on IRIS (hypertension, diabetes, anaemia, pulse oximetry).
+6. Evidence on camera-read RDTs, then a bench test plan for the cartridge reader.
 
 ## Open questions for the owner
 - SolidWorks Student: which year?
 - Allow vendor/doc domains in the environment's network settings (help.solidworks.com, datasheet sites)?
+- Allow www.who.int and cdn.who.int (GHE 2021 DALY spreadsheets)?
+- D-007: build the menu on EDL 5 (WHO's current list) rather than EDL 4? First cartridge set?

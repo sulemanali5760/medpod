@@ -25,3 +25,12 @@
 - 1136 mm wide: won't fit through a standard doorway.
 - Enclosed capsule: claustrophobia risk. Clear canopy, lights and an inside display help but don't solve it.
 - Lid must open from inside and on power loss (manual release). Not designed yet.
+
+## Unverified in Phase 2 (test menu, `docs/04-test-menu.md`)
+- Burden ranking uses 2021 **deaths** (WHS 2024 Fig. 1.9), not DALYs. GHE 2021 DALY tables are blocked (www.who.int).
+- Cost per test: not sourced.
+- Accuracy per test: not extracted (e-EDL "Summary of Evidence Evaluation" exists per test).
+- Reading RDTs and agglutination cards with the pod camera: no evidence yet.
+- Referral thresholds for BP, SpO2, glucose, Hb: no WHO guideline fetched yet.
+- Link between HBV/HCV and cirrhosis burden in LIC/LMIC: not sourced.
+- EDL 4 Tier I is a hand transcription of a PDF. It is cross-checked against the e-EDL but not against a second transcription.
