@@ -5,6 +5,7 @@
 | `who_edl5.csv` | All 234 recommendations of the electronic EDL (39 Non-laboratory, 195 Laboratory) | WHO e-EDL, https://edl.who-healthtechnologies.org (site states: "Fifth WHO model list of essential in vitro diagnostics (EDL 5)", © WHO 2025) | One `curl` per id listed on the home page (ids 1–234), parsed by `tools/who_edl.py` | 2026-11-02 |
 | `who_edl4_tier1.csv` | EDL 4 Tier I (Section I.a and I.b: community settings and health facilities without laboratories), 39 rows | WHO TRS 1053 (2023), ISBN 9789240081093, https://iris.who.int/handle/10665/373322, pp. 127–146. PDF sha256 `6ca9bc6e…9089923` | Hand transcription from `pdftotext -layout` output; `edl5_ids` maps each row to the e-EDL | 2026-11-02 |
 | `who_ghe2021_top10_deaths.csv` | Top 10 causes of death in 2021, low-income and lower-middle-income (World Bank groups) | WHO World health statistics 2024, Figure 1.9, p. 14, https://iris.who.int/handle/10665/376869 (its source is WHO Global Health Estimates 2021). PDF sha256 `f7b08734…1d3c3555` | Read from the figure's 2021 column; text extraction and the rendered page agree | 2026-11-02 |
+| `test_costs.csv` | Price per test/device for the D-008 set, plus two lowest-day's-wage figures, each with a verbatim quote. **Draft** | See source keys below | Quotes extracted by script from the source text, then checked by `tests/test_test_costs.py` | 2026-11-02 |
 | `test_menu.csv` | Our menu: condition × EDL 5 id × pod method. **Draft** | Derived from the three files above | Hand-built; checked by `tests/test_test_menu_data.py` | 2026-11-02 |
 
 Fields are copied verbatim (tags stripped, whitespace collapsed). One typo comes from the source:
@@ -29,3 +30,14 @@ for non-commercial use, with attribution, and the copy keeps the same licence. R
 for the e-EDL: "© World Health Organization, Fifth WHO model list of essential in vitro diagnostics (EDL 5),
 World Health Organization, 2025. Some rights reserved. CC BY-NC-SA 3.0 IGO."
 WHO does not endorse MedPod. If MedPod ever becomes commercial, these files need a licence review.
+
+## Source keys used in `test_costs.csv`
+| Key | Source | Licence / access |
+|---|---|---|
+| WHO-GHR-2024 | WHO. Global hepatitis report 2024: action for access in low- and middle-income countries. ISBN 9789240091672. https://iris.who.int/handle/10665/376461 | CC BY-NC-SA 3.0 IGO |
+| WHO-DIAB-2025 | WHO. Availability, price and affordability of health technologies for the management of diabetes (2025). ISBN 9789240109322. IRIS item 26d00f9d-e1b0-4aba-be9c-06bf38747568 | CC BY-NC-SA 3.0 IGO |
+| PMC8752184 | Price, quality, and market dynamics of malaria rapid diagnostic tests: analysis of Global Fund 2009–2018 data. Malar J. 2022;21:12. doi:10.1186/s12936-021-04008-2 | free full text on PMC; licence not checked |
+| PMC13199886 | Successes and setbacks in dual HIV/syphilis test scale-up strategies. Health Policy Open. 2026;10:100172. doi:10.1016/j.hpopen.2026.100172 | free full text on PMC; licence not checked |
+| PMC6749552 | A model for point of care testing for non-communicable disease diagnosis in resource-limited countries. Glob Health Epidemiol Genom. 2019;4:e7. doi:10.1017/gheg.2019.6 | free full text on PMC; licence not checked |
+
+"PDF p." means the page index in the PDF file, not the printed page number.
