@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+simulation/**/run/
+*.frd
+*.dat
+*.sta
+*.cvg
+*.12d
+node_modules/
