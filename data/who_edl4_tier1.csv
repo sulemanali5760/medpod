@@ -1,0 +1,40 @@
+row,section,group,ivd_test,assay_format,specimen_types,edl5_ids,edl5_note
+1,I.a,Blood typing,ABO blood groups and Rhesus (Rh) factor typing,Point-of-care test,Capillary whole blood,1,
+2,I.a,Blood typing,ABO blood groups and Rhesus (Rh) factor typing,Slide agglutination test,Capillary whole blood; Venous whole blood,2,EDL 5 setting: Laboratory
+3,I.a,Clinical chemistry,Albumin,Dipstick,Urine,3,
+4,I.a,Clinical chemistry,Bilirubin,Dipstick,Urine,,Not found in e-EDL (EDL 5) on 2026-11-02
+5,I.a,Clinical chemistry,Glucose,Glucose meter,Capillary whole blood,4,
+6,I.a,Clinical chemistry,Ketones,Dipstick,Urine,5,
+7,I.a,Clinical chemistry,Urinalysis test strips,Dipstick,Urine,6,
+8,I.a,Haematology,Erythrocyte sedimentation rate (ESR),Westergren,Venous whole blood,7,EDL 5 setting: Laboratory
+9,I.a,Haematology,Haemoglobin (Hb),Haemoglobinometer,Capillary whole blood; Venous whole blood,8,
+10,I.a,Haematology,Haemoglobin (Hb),Dipstick,Urine,9,
+11,I.a,Pregnancy testing,Human chorionic gonadotropin (hCG),"RDT (dipstick and cassette), latex agglutination",Urine (early morning),10;11;12,EDL 5 lists latex agglutination (12) under Laboratory
+12,I.b,Chagas disease,Trypanosoma cruzi IgG antibody,RDT,Capillary whole blood; Venous whole blood; Serum,13,
+13,I.b,Cholera,Vibrio cholerae antigen,RDT,Stool; Rectal swab,14;15,
+14,I.b,Coronavirus disease (COVID-19),SARS-CoV-2 antigen,RDT; Handheld or small benchtop instrument for POC use,Upper respiratory specimens (e.g. nasopharyngeal or nasal swab),16,
+15,I.b,Diabetes mellitus,Glucose,Dipstick,Urine,17,
+16,I.b,Diabetes mellitus,Glucose,Glucose meter,Capillary whole blood,4;18,
+17,I.b,Diabetes mellitus,Haemoglobin A1c (HbA1c),Handheld and small analysers,Capillary whole blood,19,
+18,I.b,Hepatitis B virus (HBV) infection,Hepatitis B surface antigen (HBsAg),RDT,Capillary whole blood; Venous whole blood,20,
+19,I.b,Hepatitis B virus (HBV) infection,Hepatitis B e antigen (HBeAg),RDT,Capillary whole blood; Venous whole blood,21,"EDL 5 setting: Laboratory; specimen changed to Serum, Plasma"
+20,I.b,Hepatitis C virus (HCV) infection,Antibodies to hepatitis C virus (anti-HCV),RDT,Oral fluid; Capillary whole blood; Venous whole blood,22,
+21,I.b,Hepatitis E virus (HEV) infection,IgM antibodies to hepatitis E virus (anti-HEV IgM),RDT,Capillary whole blood,23,
+22,I.b,HIV infection,Antibodies to HIV 1/2 (anti-HIV Ab) - HIV self-testing,RDT,Oral fluid; Capillary whole blood,24,
+23,I.b,HIV infection,Antibodies to HIV 1/2 (anti-HIV Ab),RDT,Oral fluid; Capillary whole blood; Venous whole blood,25,
+24,I.b,HIV infection,Combined HIV antibody/p24 antigen (anti-HIV/p24 Ag),RDT,Capillary whole blood; Venous whole blood,26,
+25,I.b,HIV infection,Qualitative HIV nucleic acid test (NAT),Point-of-care NAT,Capillary whole blood; Venous whole blood; Dried blood spots,27,EDL 5 setting: Laboratory
+26,I.b,HIV infection,Quantitative HIV nucleic acid test (NAT),Point-of-care NAT,Plasma; Serum,28,EDL 5 setting: Laboratory
+27,I.b,HIV infection,CD4 cell enumeration,Point-of-care flow cytometry platform,Capillary whole blood; Venous whole blood,29,
+28,I.b,HIV infection,Cryptococcal antigen,RDT,Capillary whole blood; Venous whole blood,30,
+29,I.b,HIV infection,Lipoarabinomannan (LAM) antigen,RDT,Urine,32,
+30,I.b,Influenza,Influenza A and B antigen,RDT; Instrument-based point-of-care immunoassay,Nasal swab; Nasopharyngeal swab; Nasopharyngeal aspirate or wash,,Not found in e-EDL (EDL 5) on 2026-11-02
+31,I.b,Influenza,Influenza A and B nucleic acid test,Point-of-care NAT,Nasal swab; Nasopharyngeal swab; Nasopharyngeal aspirate or wash,33,EDL 5 setting: Laboratory
+32,I.b,Malaria,Plasmodium spp. antigens; species-specific (e.g. HRP2) and/or pan-species-specific (e.g. pan-pLDH),RDT,Capillary whole blood; Venous whole blood,34,
+33,I.b,Streptococcal pharyngitis,Group A Streptococcus antigen,RDT,Throat swab,35,
+34,I.b,Sickling disorders,Sickle cell testing,RDT,Capillary whole blood; Venous whole blood,36,"EDL 5 renamed: Haemoglobin A, S and C detection"
+35,I.b,Syphilis,Antibodies to Treponema pallidum,RDT,Capillary whole blood; Venous whole blood,37,
+36,I.b,Syphilis,Combined antibodies to T. pallidum and HIV 1/2,RDT,Capillary whole blood; Venous whole blood,38,
+37,I.b,Tuberculosis (TB),Skin test for TB infection,Tuberculin skin test (TST); Mycobacterium tuberculosis antigen-based skin tests (TBSTs),N/A,,Not found in e-EDL (EDL 5) on 2026-11-02
+38,I.b,Tuberculosis (TB),Lipoarabinomannan (LAM) antigen,RDT,Urine,32,
+39,I.b,Visceral leishmaniasis (kala-azar),Recombinant K39 (rK39) antigen,RDT,Capillary whole blood; Serum; Venous whole blood,39,

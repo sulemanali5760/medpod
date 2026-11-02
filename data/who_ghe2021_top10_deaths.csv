@@ -1,0 +1,21 @@
+income_group,rank_2021,cause,cause_group
+Low-income,1,Lower respiratory infections,"Communicable, maternal, perinatal and nutritional conditions"
+Low-income,2,Stroke,Noncommunicable diseases
+Low-income,3,Ischaemic heart disease,Noncommunicable diseases
+Low-income,4,Malaria,"Communicable, maternal, perinatal and nutritional conditions"
+Low-income,5,Preterm birth complications,"Communicable, maternal, perinatal and nutritional conditions"
+Low-income,6,COVID-19,"Communicable, maternal, perinatal and nutritional conditions"
+Low-income,7,Diarrhoeal diseases,"Communicable, maternal, perinatal and nutritional conditions"
+Low-income,8,Tuberculosis,"Communicable, maternal, perinatal and nutritional conditions"
+Low-income,9,Birth asphyxia and birth trauma,"Communicable, maternal, perinatal and nutritional conditions"
+Low-income,10,HIV/AIDS,"Communicable, maternal, perinatal and nutritional conditions"
+Lower-middle-income,1,COVID-19,"Communicable, maternal, perinatal and nutritional conditions"
+Lower-middle-income,2,Ischaemic heart disease,Noncommunicable diseases
+Lower-middle-income,3,Stroke,Noncommunicable diseases
+Lower-middle-income,4,Chronic obstructive pulmonary disease,Noncommunicable diseases
+Lower-middle-income,5,Lower respiratory infections,"Communicable, maternal, perinatal and nutritional conditions"
+Lower-middle-income,6,Tuberculosis,"Communicable, maternal, perinatal and nutritional conditions"
+Lower-middle-income,7,Diarrhoeal diseases,"Communicable, maternal, perinatal and nutritional conditions"
+Lower-middle-income,8,Diabetes mellitus,Noncommunicable diseases
+Lower-middle-income,9,Cirrhosis of the liver,Noncommunicable diseases
+Lower-middle-income,10,Preterm birth complications,"Communicable, maternal, perinatal and nutritional conditions"

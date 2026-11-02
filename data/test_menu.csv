@@ -1,0 +1,24 @@
+priority,condition,ghe2021_cause,edl5_ids,pod_method,status,note
+A,Malaria,Malaria,34;114;115,cartridge reader,Candidate (EDL 5 non-lab),Plasmodium RDT (34). G6PD tests (114 POC instrument; 115 RDT) inform 8-aminoquinoline treatment per EDL purpose; the pod refers and does not prescribe.
+A,HIV infection,HIV/AIDS,24;25;26;29;30,cartridge reader,Candidate (EDL 5 non-lab),Antibody RDTs (24 self-test; 25; 26 Ab/p24). CD4 (29) needs a POC instrument; cryptococcal antigen (30) only for advanced HIV disease.
+A,Tuberculosis,Tuberculosis,32,cartridge reader,Candidate (EDL 5 non-lab; limited),EDL 5 purpose limits urine LAM (32) to people living with HIV. All other EDL 5 TB tests are Laboratory (NAAT/culture/IGRA): refer. Cough-sound AI screening is Draft research.
+A,COVID-19,COVID-19,16,cartridge reader,Candidate (EDL 5 non-lab),SARS-CoV-2 antigen RDT (16) from upper respiratory swab.
+A,Diabetes mellitus,Diabetes mellitus,4;19;17;5,handheld analyser,Candidate (EDL 5 non-lab),Capillary glucose (4) and HbA1c (19) POC instruments; urine glucose (17) only if blood glucose unavailable; urine ketones (5).
+A,Cardiovascular risk (cholesterol),Ischaemic heart disease;Stroke,227,handheld analyser,Candidate (EDL 5 non-lab),Total cholesterol POC (227): purpose 'to assess risk of cardiovascular disease'.
+A,Hepatitis B and C (chronic viral hepatitis),Cirrhosis of the liver,20;22;233,cartridge reader,Candidate (EDL 5 non-lab); cirrhosis link Draft,HBsAg RDT (20); anti-HCV RDT (22) and self-test (233). Share of cirrhosis caused by HBV/HCV in LIC/LMIC is not yet sourced.
+A,Diarrhoeal diseases (cholera outbreaks),Diarrhoeal diseases,14;15,refer,Candidate (EDL 5 non-lab; surveillance only),EDL 5: cholera RDTs 'cannot be used to confirm individual cholera cases'. Pod may flag for outbreak surveillance only; individual care is referral.
+C,Hypertension (blood pressure),Ischaemic heart disease;Stroke,,pod sensor,Draft,Not an IVD so not in EDL. BP cuff is in the capsule (D-006). Thresholds and referral rules must come from the WHO hypertension guideline (to fetch from IRIS).
+C,Lower respiratory infections,Lower respiratory infections,,pod sensor,Draft,No EDL 5 non-lab IVD (CRP is Laboratory in EDL 5). SpO2/temperature/breathing rate from pod sensors; danger-sign thresholds need a WHO guideline source. Refer.
+C,Chronic obstructive pulmonary disease,Chronic obstructive pulmonary disease,,refer,Draft,No IVD. Spirometry is not in pod v0.1; evaluate as a future module.
+-,Neonatal conditions,Preterm birth complications;Birth asphyxia and birth trauma,,out of scope,Out of scope,Capsule is sized for adults (D-006) and these are newborn conditions.
+B,Anaemia,,8;97,handheld analyser,Candidate (EDL 5 non-lab),Haemoglobin POC (8); microhaematocrit (97): equipment needs not yet checked.
+B,Syphilis,,37;38,cartridge reader,Candidate (EDL 5 non-lab),Treponemal antibody RDT (37); dual HIV/syphilis RDT (38).
+B,Kidney disease and urinary tract infection,,3;6;228,cartridge reader,Candidate (EDL 5 non-lab),Urine albumin (3) and urinalysis (6) dipsticks; creatinine POC (228) needs an instrument.
+B,Pregnancy,,10;11,cartridge reader,Candidate (EDL 5 non-lab),beta-hCG urine dipstick (10) or RDT (11).
+B,Sickle cell disease,,36,cartridge reader,Candidate (EDL 5 non-lab),Haemoglobin A/S/C RDT (36).
+B,Hepatitis E,,23,cartridge reader,Candidate (EDL 5 non-lab),anti-HEV IgM RDT (23).
+B,Group A streptococcal pharyngitis,,35,cartridge reader,Candidate (EDL 5 non-lab),Throat swab RDT (35); who takes the swab in an unattended pod is an open question.
+B,Blood group (ABO/Rh),,1,cartridge reader,Candidate (EDL 5 non-lab),POC agglutination card (1); reading agglutination by camera is unverified.
+B,Lead exposure,,226,handheld analyser,Candidate (EDL 5 non-lab),Lead POC (226).
+B,Regional NTDs: Chagas and visceral leishmaniasis,,13;39,cartridge reader,Candidate (EDL 5 non-lab; regional),T. cruzi IgG RDT (13); rK39 RDT (39). Only where endemic.
+B,Soil-transmitted helminths and schistosomiasis,,174,refer,Candidate (EDL 5 non-lab); not pod-feasible,Kato-Katz (174) is stool microscopy: not feasible in the pod.
