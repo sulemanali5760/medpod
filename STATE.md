@@ -7,7 +7,7 @@
 | # | Phase | Status |
 |---|---|---|
 | 0 | Project setup, rules, verified toolchain | ✅ Done |
-| 1 | Patient platform: concept, frame design, FEA vs 180 kg × SF 2 | 🔄 Next |
+| 1 | Capsule design + geometry verification | ✅ Done (structure/thermal next) |
 | 2 | Sensor arm and mounts | ⏳ |
 | 3 | Sensor electronics (ECG, SpO2, BP, cameras, mic) | ⏳ |
 | 4 | Firmware + data capture | ⏳ |
@@ -22,14 +22,19 @@
 - Blocked: help.solidworks.com unreachable from cloud. SolidWorks API skill to be built from
   the official `apihelp.chm` installed with SolidWorks on the owner's PC.
 
-## Phase 1 plan (to agree with owner)
-1. Decide platform type: flat bed vs reclined chair (decision D-004).
-2. Get official 40×40 T-slot profile data (I, mass, alloy) from a supplier datasheet.
-3. Model frame in CadQuery → render → owner reviews.
-4. FEA: 180 kg distributed + 2× safety factor; also point load (person sitting on edge).
-5. Tests: stress < yield / 2, deflection < limit (to decide), tip-over stability.
-6. Export STEP + SolidWorks macro; owner re-checks in SolidWorks Simulation.
+## Phase 1 — Capsule design (owner chose: final version, fully enclosed)
+Done:
+- Full parametric capsule model, STEP export for SolidWorks, 5 renders.
+- Geometry tests G-000…G-006 pass (fit, clearances, ring travel, lid opening).
+
+Next, in order:
+1. Ventilation and heat: a person gives off heat and CO2 inside a closed lid. Size the fans/vents
+   (verify the formulas first). **Safety-critical.**
+2. FEA: deck + load cells + pedestal under 180 kg (SF 2), patient sitting on the rim, lid hinge.
+3. Lid: mass, gas-strut force, manual inside release, power-loss behaviour.
+4. Replace provisional component envelopes with datasheet values (needs vendor sites, or the owner's PC).
+5. SolidWorks: import STEP, build native features via macros (needs official API docs).
 
 ## Open questions for the owner
-- Bed (lie down) or reclined chair for v0.1?
-- SolidWorks Student version year (e.g. 2025)?
+- SolidWorks Student: which year?
+- Allow vendor/doc domains in the environment's network settings (help.solidworks.com, datasheet sites)?

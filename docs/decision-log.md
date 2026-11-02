@@ -33,8 +33,22 @@ Each entry: what we had to decide, the options, what we picked, and why.
   SolidWorks modelling and drawings, plus SolidWorks Simulation / ANSYS as an independent second check.
   Two different solvers agreeing is stronger evidence than one.
 
-## D-005 — Concept layout v0.1 (draft, needs owner review)
+## D-005 — Concept layout v0.1 — SUPERSEDED by D-006
 - **Date:** 2026-11-02
 - Flat bed 2000 × 700 mm, top at 650 mm, 40×40 T-slot frame with 6 legs, sensor arch over the
   chest (x = 1450 mm) carrying an RGB camera, a thermal camera and a microphone, electronics box under the platform.
 - Picture: docs/img/concept_v01.png. STEP: cad/parts/concept_v01.step.
+
+## D-006 — Final form: fully enclosed capsule (owner decision)
+- **Date:** 2026-11-02
+- **Decision (owner):** one final design, no interim versions; fully enclosed capsule.
+- **Layout:** capsule shell 2620 × 1120 × 960 mm (split at the axis, z = 900 mm). Upper half is a lid
+  with a clear polycarbonate centre and white end caps, hinged on one side (70°, gas struts).
+  Inside: contoured bed on 4 load cells, scanner ring on rails (travel ±800 mm) carrying
+  camera / thermal / radar / lights / mics, hand rests with ECG electrodes, SpO2 clip, BP cuff,
+  blood-analyser port, ultrasound arm (future). Pedestal holds battery, isolated PSU, compute, fans.
+- **Why a moving ring:** one set of sensors covers the whole body at a fixed short distance, instead of
+  many fixed sensors. That's the same idea as CT/MRI gantries.
+- **Verified:** geometry tests G-000…G-006 pass. **Not yet verified:** structure (FEA), lid strut
+  forces, ventilation/heat, component sizes (provisional).
+- Model: `cad/medpod_capsule.py` → `cad/parts/medpod_capsule.step`. Renders: `docs/img/capsule_*.png`.

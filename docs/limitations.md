@@ -14,4 +14,14 @@
 - Getting AI models to reliably say "I don't know".
 
 ## Unverified in this project
-_(Anything we assumed but haven't tested yet goes here.)_
+- All sensor/electronics envelopes and fields of view (docs/02-components.md): placeholders.
+- Mannequin proportions: common anthropometric fractions, not yet checked against ANSUR II.
+- Clearance margins (150 mm to lid, 50 mm to moving ring) are our own assumptions, not from a standard.
+- Structural strength of pedestal/deck/hinge: no FEA yet.
+- Lid gas-strut force, lid mass and hand force to open: not calculated.
+- Heat and CO2 build-up inside a closed capsule with a person in it: not calculated. This is a safety issue.
+
+## Known design issues
+- 1136 mm wide: won't fit through a standard doorway.
+- Enclosed capsule: claustrophobia risk. Clear canopy, lights and an inside display help but don't solve it.
+- Lid must open from inside and on power loss (manual release). Not designed yet.
