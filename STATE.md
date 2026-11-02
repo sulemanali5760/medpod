@@ -35,6 +35,11 @@ Next, in order:
 4. Replace provisional component envelopes with datasheet values (needs vendor sites, or the owner's PC).
 5. SolidWorks: import STEP, build native features via macros (needs official API docs).
 
+## Phase 2 — Test menu (CURRENT, owner direction 2026-11-02)
+General-purpose affordable screening for common LMIC conditions; venom later.
+Plan and sources: `docs/03-test-menu-plan.md`. Start with its "Next actions" (fetch WHO EDL 4 Tier I
+and WHO GHE 2021) once WHO sites are reachable. Capsule structure/thermal work is paused, not dropped.
+
 ## Open questions for the owner
 - SolidWorks Student: which year?
 - Allow vendor/doc domains in the environment's network settings (help.solidworks.com, datasheet sites)?
