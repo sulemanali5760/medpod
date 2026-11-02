@@ -12,7 +12,6 @@ Run all: `python3 -m pytest` from the repo root.
 | F-005 | `test_calc_beams::test_second_moments` | I of rectangle / rectangular tube | Numerical ∫y² dA | 1e-3 | ✅ |
 | B-001 | `test_fea_benchmarks::test_cantilever...` | CalculiX + gmsh tet10 pipeline (mesh, node order, loads, BCs, output parsing) give correct static results | Beam theory | 3% | ✅ FEA 7.426 mm vs 7.440 mm (−0.19%); reactions sum 1000.0 N |
 | B-002 | `test_fea_benchmarks::test_plane_wall...` | CalculiX steady heat transfer pipeline | Fourier's law | 0.5% | ✅ 300.000 W vs 300 W |
-
 | G-000 | `test_capsule_geometry::test_G000...` | The collision checker itself works (control test) | Patient lifted 300 mm must collide | > 1000 mm³ | ✅ 453,574 mm³ detected |
 | G-001 | `test_G001_patient_fits...` | 1755 mm patient fits inside closed capsule | Exact OpenCascade solid intersection + min distance | 0 overlap, ≥ 150 mm to lid | ✅ 236 mm clearance |
 | G-002 | `test_G002_scanner_ring_clears...` (7 positions) | Moving ring + sensors never touch the patient | same | 0 overlap, ≥ 50 mm | ✅ min 140 mm (at x = −800) |
