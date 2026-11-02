@@ -53,10 +53,18 @@ Each entry: what we had to decide, the options, what we picked, and why.
   forces, ventilation/heat, component sizes (provisional).
 - Model: `cad/medpod_capsule.py` → `cad/parts/medpod_capsule.step`. Renders: `docs/img/capsule_*.png`.
 
-## D-007 — Test menu built on WHO EDL 5 Non-laboratory list (PROPOSED, needs owner OK)
+## D-007 — Test menu built on WHO EDL 5 Non-laboratory list (APPROVED by owner 2026-11-02)
 - **Date:** 2026-11-02
 - **Proposal:** the plan said "EDL 4 Tier I", but WHO's e-EDL now hosts EDL 5 (© WHO 2025), which replaces
   tiers with Non-laboratory / Laboratory settings. Build the menu on EDL 5 Non-laboratory (39 tests) and
   keep EDL 4 Tier I on file for traceability (`data/who_edl4_tier1.csv`).
 - **Why:** it is WHO's current list. Changes between the two are listed in `docs/04-test-menu.md`.
 - **Open:** first cartridge set (proposal: malaria, HIV, HBsAg, anti-HCV, syphilis; glucose/HbA1c, cholesterol, BP).
+
+## D-008 — First cartridge set (owner approved 2026-11-02)
+- **Rapid tests (cartridge reader, capillary blood):** malaria (EDL 5 id 34), HIV (25, or 38 dual HIV/syphilis),
+  HBsAg (20), anti-HCV (22), syphilis (37 / 38).
+- **NCD side:** glucose (4) / HbA1c (19) and total cholesterol (227) on handheld analysers, plus the BP cuff (pod sensor).
+- **Why:** each is a top-10 cause of death in LIC/LMIC (GHE 2021) or shares a test with one, and is on WHO EDL 5
+  Non-laboratory. See `docs/04-test-menu.md`.
+- **Next:** cost per test for this set (Phase 2b).
