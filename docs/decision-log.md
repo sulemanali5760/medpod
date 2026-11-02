@@ -25,3 +25,16 @@ Each entry: what we had to decide, the options, what we picked, and why.
 - **Proposed:** 40×40 mm aluminium T-slot extrusion (e.g. 6063-T5 / 6105-T5 alloys)
 - **Why:** bolt-together, no welding, easy to rework while the design changes,
   widely sold. To be confirmed by FEA against requirement M2/M3.
+
+## D-004 — Toolchain split: cloud (open source) + owner's PC (SolidWorks, ANSYS)
+- **Date:** 2026-11-02
+- **Why:** SolidWorks and ANSYS are Windows-only and licensed to the owner, so they can't run in a
+  Linux cloud container. The cloud does CadQuery CAD, CalculiX FEA, code and AI. The PC does
+  SolidWorks modelling and drawings, plus SolidWorks Simulation / ANSYS as an independent second check.
+  Two different solvers agreeing is stronger evidence than one.
+
+## D-005 — Concept layout v0.1 (draft, needs owner review)
+- **Date:** 2026-11-02
+- Flat bed 2000 × 700 mm, top at 650 mm, 40×40 T-slot frame with 6 legs, sensor arch over the
+  chest (x = 1450 mm) carrying an RGB camera, a thermal camera and a microphone, electronics box under the platform.
+- Picture: docs/img/concept_v01.png. STEP: cad/parts/concept_v01.step.

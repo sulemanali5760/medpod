@@ -1,0 +1,3891 @@
+##### node192.html
+*BOUNDARY
+
+     Contents 
+
+*BOUNDARY
+
+Keyword type: step or model definition
+
+This option is used to prescribe boundary conditions. This includes:
+
+temperature, displacements and rotations for structures
+
+total temperature, mass flow and total pressure for gas networks
+
+temperature, mass flow and static pressure for liquid networks
+
+temperature, mass flow and fluid depth for channels
+
+For liquids and structures the total and static temperature virtually
+coincide, therefore both are represented by the term temperature.
+
+The following degrees of freedom are being used:
+
+for structures:
+
+1: translation in the local x-direction
+
+2: translation in the local y-direction
+
+3: translation in the local z-direction
+
+4: rotation about the local x-axis (only for nodes belonging to beams or shells)
+
+5: rotation about the local y-axis (only for nodes belonging to beams or shells)
+
+6: rotation about the local z-axis (only for nodes belonging to beams or shells)
+
+11: temperature
+
+for gas networks:
+
+1: mass flow
+
+2: total pressure
+
+11: total temperature
+
+for liquid networks:
+
+1: mass flow
+
+2: static pressure
+
+11: temperature
+
+for liquid channels:
+
+1: mass flow
+
+2: fluid depth
+
+11: temperature
+
+If no
+*TRANSFORM card applied to the node at stake, the local
+directions coincide with the global ones. Notice that a *TRANSFORM card is not
+allowed for nodes in which boundary conditions are applied to rotations.
+
+Optional parameters are OP, AMPLITUDE, TIME DELAY, LOAD CASE, USER, MASS FLOW,
+FIXED, SUBMODEL and STEP. OP can take the value NEW or
+MOD. OP=MOD is default and implies that previously prescribed
+displacements remain active in subsequent steps. Specifying a
+displacement in the same node and direction for which a displacement
+was defined in a previous step replaces this  value. OP=NEW implies
+that previously prescribed displacements are removed. If multiple
+*BOUNDARY cards are present in a step this parameter takes effect for the first *BOUNDARY card only. 
+
+The AMPLITUDE parameter allows for the specification of an amplitude by which the boundary values are scaled (mainly used for nonlinear static and dynamic calculations). This only makes sense for nonzero boundary values. Thus, in that case the values entered on the *BOUNDARY card are interpreted as reference values to be multiplied with the (time dependent) amplitude value to obtain the actual value. At the end of the step the reference value is replaced by the actual value at that time. In subsequent
+steps this value is kept constant unless it is explicitly redefined or the
+amplitude is defined using TIME=TOTAL TIME in which case the amplitude keeps
+its validity. Note that, if for a given degree of freedom in a given node a
+*BOUNDARY card with AMPLITUDE is defined, this amplitude applies to all *BOUNDARY
+cards previously defined within the same step for this degree of freedom in this
+node. Similarly, if for a given degree of freedom in a given node a *BOUNDARY
+card without AMPLITUDE is defined, no amplitude applies to all *BOUNDARY cards
+reviously defined within the same step for this degree of freedom in this node.
+
+The TIME DELAY parameter modifies the AMPLITUDE parameter. As such, TIME DELAY
+must be preceded by an AMPLITUDE name. TIME DELAY is a time shift by which the
+AMPLITUDE definition it refers to is moved in positive time direction. For
+instance, a TIME DELAY of 10 means that for time t the amplitude is taken
+which applies to time t-10. The TIME DELAY parameter must only appear once on
+one and the same keyword card.
+
+The LOAD CASE parameter is only active in *STEADY STATE
+DYNAMICS calculations. LOAD CASE = 1 means that the
+loading is real or in-phase.  LOAD CASE = 2 indicates that the load is
+imaginary or equivalently phase-shifted by . Default is LOAD CASE =
+1.
+
+If the USER parameter is selected the boundary values are determined by
+calling the user subroutine uboun.f, which
+must be provided by the user. This applies to all nodes listed
+beneath the *BOUNDARY keyword. Any boundary values specified behind the
+degrees of freedom are not taken into account. If the USER parameter is selected,
+the AMPLITUDE parameter has no effect and should not be used.
+
+The MASS FLOW parameter specifies that the *BOUNDARY keyword is used
+to define mass flow rates in convective problems. A mass flow rate can only be
+applied to the first degree of freedom of the midside node of network elements. 
+
+or, if there is no previous step, sets it to zero.
+
+Finally, the SUBMODEL parameter specifies that the displacements in the nodes
+listed underneath will be obtained by interpolation from a global model. To
+this end these nodes have to be part of a
+*SUBMODEL,TYPE=NODE card. On the latter card the result
+file (frd file) of the global model is defined. The use of the SUBMODEL
+parameter requires the STEP parameter, specifying the step in the global model
+which will be used for the interpolation. If results for more than one
+increment within the step are stored, the last increment is taken. Notice that the displacements
+interpolated from
+the global model are not transformed, no matter what coordinate system is
+applied to the nodes in the submodel. Consequently, if the displacements of the global model
+are stored in a local coordinate system, this local system also applies to the
+submodel nodes in which these displacements are interpolated. One could say
+that the submodel nodes in which the displacements of the global model are
+interpolated, inherit the coordinate system in which the displacements of the
+global model were stored.
+
+A distinction is made whether the conditions are homogeneous (fixed
+conditions),  inhomogeneous (prescribed displacements) or of the submodel type.
+
+Subsections
+
+Homogeneous Conditions
+Inhomogeneous Conditions
+Submodel
+
+     Contents 
+
+
+##### node197.html
+*BUCKLE
+
+     Contents 
+
+*BUCKLE
+
+Keyword type: step
+
+This procedure is used to determine the buckling load of a structure. The load active in the last non-perturbative *STATIC step, if any, will be taken as preload if the perturbation parameter is specified on the *STEP card. All loads previous to a perturbation step are removed at the start of the step; only the load specified within the buckling step is scaled till buckling occurs. Right now, only the stress stiffness due to the buckling load is taken into account and not the large deformation stiffness it may cause.
+
+Buckling leads to an eigenvalue problem whose lowest eigenvalue is the scalar
+the load in the buckling step has to be multiplied with to get the buckling
+load. Thus, generally only the lowest eigenvalue is needed. This value is also
+called the buckling factor and it is always stored in the .dat file.
+
+SOLVER is the only parameter. It specifies which solver is used to determine
+the stress stiffness due to the buckling load and to perform a
+decomposition of the linear equation system. This decomposition is done only
+once. It is repeatedly used in the iterative procedure determining the
+eigenvalues (the buckling factor). The following solvers
+can be selected:
+
+the SGI solver
+
+PARDISO 
+
+SPOOLES [3,4]. 
+
+TAUCS
+
+Default is the first solver which has been installed of the following list:
+SGI, PARDISO, SPOOLES and TAUCS. If none is installed, no eigenvalue analysis can be performed.
+
+The SGI solver is the fastest, but is is proprietary: if you own SGI
+hardware you might have gotten the scientific software package as well, which
+contains the SGI sparse system solver. SPOOLES is also very fast, but has no
+out-of-core capability: the size of systems you can solve is limited by your
+RAM memory. With 2GB of RAM you can solve up to 250,000 equations. TAUCS is
+also good, but my experience is limited to the  decomposition, which
+only applies to positive definite systems. It has an out-of-core capability
+and also offers a  decomposition, however, I was not able to run either of
+them so far. PARDISO is the Intel proprietary solver.
+
+First line:
+
+*BUCKLE
+
+Second line:
+
+Number of buckling factors desired (usually 1).
+
+Accuracy desired (default: 0.01).
+
+# Lanczos vectors calculated in each iteration (default: 4 * #eigenvalues).
+
+Maximum # of iterations (default: 1000).
+
+It is rarely needed to change the defaults. 
+
+The eigenvalues are automatically stored in file jobname.dat.
+
+Example:
+
+*BUCKLE
+2
+
+calculates the lowest two buckling modes and the corresponding buckling factors. For the accuracy, the number of Lanczos vectors and the number of iterations the defaults are taken. 
+
+Example files: beam8b,beamb.
+
+     Contents 
+
+
+##### node206.html
+*CLOAD
+
+     Contents 
+
+*CLOAD
+
+Keyword type: step
+
+This option allows concentrated forces to be applied to any node in
+the model which is not fixed by a single or multiple point
+constraint. Optional parameters are OP, AMPLITUDE, TIME DELAY, USER, LOAD CASE,
+SECTOR, SUBMODEL and STEP. OP can take the
+value NEW or MOD. OP=MOD is default and implies that the concentrated
+loads applied to different nodes in previous steps are kept. Specifying a force in a node for which a
+force was defined in a previous step replaces this value. A force specified in
+a node and direction for which a force was already defined within the same step is added to
+this value. OP=NEW
+implies that all concentrated loads applied in previous steps are removed. If
+multiple *CLOAD cards are present in a step this parameter takes effect for the first *CLOAD card only. 
+
+The AMPLITUDE parameter allows for the specification of an amplitude by which
+the force values are scaled (mainly used for nonlinear static and dynamic
+calculations). Thus, in that case the values entered on the *CLOAD card are
+interpreted as reference values to be multiplied with the (time dependent)
+amplitude value to obtain the actual value. At the end of the step the
+reference value is replaced by the actual value at that time. In subsequent
+steps this value is kept constant unless it is explicitly redefined or the
+amplitude is defined using TIME=TOTAL TIME in which case the amplitude keeps
+its validity. Note that, if for a given degree of freedom in a given node a
+*CLOAD card with AMPLITUDE is defined, this amplitude applies to all *CLOAD
+cards previously defined within the same step for this degree of freedom in this
+node. Similarly, if for a given degree of freedom in a given node a *CLOAD
+card without AMPLITUDE is defined, no amplitude applies to all *CLOAD cards
+reviously defined within the same step for this degree of freedom in this node.
+
+The AMPLITUDE parameter applies to all loads specified by the same *CLOAD
+card. This means that, by using several *CLOAD cards, different amplitudes can
+be applied to the forces in different coordinate directions in one and the
+same node. An important exception to this rule are nodes in which a
+transformation applies (by using the *TRANSFORM card): an
+amplitude defined for such a node applies to ALL coordinate directions. If
+several are defined, the last one applies.
+
+The TIME DELAY parameter modifies the AMPLITUDE parameter. As such, TIME DELAY
+must be preceded by an AMPLITUDE name. TIME DELAY is a time shift by which the
+AMPLITUDE definition it refers to is moved in positive time direction. For
+instance, a TIME DELAY of 10 means that for time t the amplitude is taken
+which applies to time t-10. The TIME DELAY parameter must only appear once on
+one and the same keyword card.
+
+If the USER parameter is selected the concentrated load values are determined by
+calling the user subroutine cload.f, which
+must be provided by the user. This applies to all nodes listed
+beneath the *CLOAD keyword. Any load values specified following the
+degree of freedom are not taken into account. If the USER parameter is selected,
+the AMPLITUDE parameter has no effect and should not be used. 
+
+The LOAD CASE parameter is only active in *STEADY STATE
+DYNAMICS calculations. LOAD CASE = 1 means that the
+loading is real or in-phase.  LOAD CASE = 2 indicates that the load is
+imaginary or equivalently phase-shifted by . Default is LOAD CASE =
+1.
+
+The SECTOR parameter can only be used in *MODAL
+DYNAMIC and *STEADY STATE
+DYNAMICS calculations with cyclic symmetry. The datum
+sector (the sector which is modeled) is sector 1. The other sectors are
+numbered in increasing order in the rotational direction going from the slave
+surface to the master surface as specified by the *TIE
+card. Consequently, the SECTOR parameters allows to apply a point load to any
+node in any sector. However, the only coordinate systems allowed in a node in which a force is applied in a sector
+different from the datum sector are restricted to the global carthesian system and a local
+cylindrical system. If the global coordinate system applies, the force defined by the user
+(in the global system) is simply copied to the appropriate sector without
+changing its direction. The user must make sure the direction of the force is
+the one needed in the destination sector. If a local cylindrical system
+applies, this system must be identical with the one defined underneath the
+*CYCLIC SYMMETRY MODEL card. In that case, the
+force defined in the datum sector is rotated towards the destination sector,
+i.e. the radial, circumferential and axial part of the force is kept.
+
+Finally, the SUBMODEL parameter specifies that the forces in the specified degrees of
+freedom of the nodes
+listed underneath will be obtained by interpolation from a global model. To
+this end these nodes have to be part of a
+*SUBMODEL,TYPE=NODE card. On the latter card the result
+file (frd file) of the global model is defined. The use of the SUBMODEL
+parameter requires the STEP parameter, specifying the step in the global model
+which will be used for the interpolation. If results for more than one
+increment within the step are stored, the last increment is taken. Notice that the forces
+interpolated from
+the global model are not transformed, no matter what coordinate system is
+applied to the nodes in the submodel. Consequently, if the forces of the global model
+are stored in a local coordinate system, this local system also applies to the
+submodel nodes in which these forces are interpolated. One could say
+that the submodel nodes in which the forces of the global model are
+interpolated, inherit the coordinate system in which the forces of the
+global model were stored.
+
+First line:
+
+*CLOAD
+
+Enter any needed parameters and their value.
+
+Following line:
+
+Node number or node set label.
+
+Degree of freedom.
+
+Magnitude of the load
+
+Repeat this line if needed.
+
+Example:
+
+*CLOAD,OP=NEW,AMPLITUDE=A1,TIME DELAY=20.
+1000,3,10.3
+
+removes all previous point load forces and applies a force with magnitude 10.3
+and amplitude A1 (shifted in positive time direction by 20 time units) for degree of freedom three (global if no transformation was defined for node 1000, else local) of node 1000.
+
+Example files: achtelp, beamdelay.
+
+     Contents 
+
+
+##### node208.html
+*CONDUCTIVITY
+
+     Contents 
+
+*CONDUCTIVITY
+
+Keyword type: model definition, material
+
+This option is used to define the conductivity coefficients of a
+material. There is one optional parameter TYPE. Default is TYPE=ISO,
+other values are TYPE=ORTHO for orthotropic materials and TYPE=ANISO
+for anisotropic materials. All constants may be temperature
+dependent. The unit of the conductivity coefficients is energy per
+unit of time per unit of length per unit of temperature.
+
+First line:
+
+*CONDUCTIVITY
+
+Enter the TYPE parameter and its values, if needed
+
+Following line for TYPE=ISO:
+
+.
+
+Temperature.
+
+Repeat this line if needed to define complete temperature dependence.
+
+Following line for TYPE=ORTHO:
+
+.
+
+.
+
+.
+
+Temperature.
+
+Repeat this line if needed to define complete temperature dependence.
+
+Following line for TYPE=ANISO:
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+Temperature.
+
+Repeat this line if needed to define complete temperature dependence.
+
+Example:
+
+*CONDUCTIVITY
+50.,373.
+100.,573.
+
+tells you that the conductivity coefficient in a body made of this material is
+ at  and  at . Below  its value is set
+to , above  it is set to  and in between linear
+interpolation is applied.
+
+Example files: beamhtbo, oneel20fi.
+
+     Contents 
+
+
+##### node212.html
+*CONTACT PAIR
+
+     Contents 
+
+*CONTACT PAIR
+
+Keyword type: model definition
+
+This option is used to express that two surfaces can make contact. There are
+two required parameters: INTERACTION and TYPE, and two optional
+parameters: SMALL SLIDING and ADJUST. The dependent surface is called the slave surface,
+the independent surface is the master surface. 
+Surfaces are defined using the *SURFACE keyword card. The dependent
+surface can be defined as a nodal surface (option TYPE=NODE on the *SURFACE
+keyword) or as an element face surface (default for the *SURFACE card),
+whereas the independent surface has to be defined as an element face
+surface. If you are using quadratic elements, or if you select face-to-face
+contact, however,
+the slave surface has to be defined based on element faces and not on nodes.
+
+If the master surface is made up of edges of axisymmetric elements make sure
+that none of the edges contains nodes on the axis of symmetry. Indeed, such
+edges are expanded into collapsed quadrilaterals the normals on which cannot
+be determined in the usual way.  
+
+The INTERACTION parameter takes the name of the surface interaction (keyword
+*SURFACE INTERACTION) which applies to the
+contact pair. The surface interaction defines the nature of the contact
+(hard versus soft contact..)
+
+The TYPE parameter can take the value NODE TO SURFACE or SURFACE TO
+SURFACE. NODE TO SURFACE triggers node-to-face penalty contact, SURFACE TO
+SURFACE face-to-face penalty contact. 
+
+The SMALL SLIDING parameter only applies to node-to-face penalty contact. If it is not active, the
+contact is large sliding. This means that the pairing between the nodes
+belonging to the dependent surface and faces of the independent surface is
+performed anew in every iteration. If the SMALL SLIDING parameter is active,
+the pairing is done once at the start of every increment and kept during the
+complete increment. SMALL SLIDING usually converges better than LARGE SLIDING, since
+changes in the pairing can deteriorate the convergence rate.
+
+The ADJUST parameter allows the user to move selected slave nodes at
+the start of the calculation (i.e. at the start of the first step) such that they make contact with the master
+surface. This is a change of coordinates, i.e. the geometry of the structure
+at the start of the calculation is changed. This can be helpful if due to
+inaccuracies in the modeling a slave node which should lie on the master
+surface at the start of the calculation actually does not. Especially in
+static calculations this can lead to a failure to detect contact in the first
+increment and large displacements (i.e. acceleration due to a failure to
+establish equilibrium). These large displacements may jeopardize convergence in
+any subsequent iteration. The ADJUST parameter can be used with a node set as
+argument or with a nonnegative real number. If a node set is selected, all
+nodes in the set are adjusted at the start of the calculation. If a real
+number is specified, all nodes for which the clearance is smaller or equal to
+this number are adjusted. Penetration is interpreted as a negative clearance
+and consequently all penetrating nodes are always adjusted, no matter how
+small the adjustment size (which must be nonnegative). Notice that large
+adjustments can lead to deteriorated element quality. The adjustments are done
+along a vector through the slave node and locally orthogonal to the master surface.
+
+First line:
+
+*CONTACT PAIR
+
+enter the required parameter INTERACTION and any optional parameters.
+
+Following line:
+
+Name of the slave surface (can be nodal or element face based).
+
+Name of the master surface (must be based on element faces).
+
+Repeat this line if needed.
+
+Example:
+
+*CONTACT PAIR,INTERACTION=IN1,ADJUST=0.01
+dep,ind
+
+defines a contact pair consisting of the surface dep as dependent
+surface and the element face surface ind as independent surface. The name of
+the surface interaction is IN1. All slave nodes for which the clearance is
+smaller than or equal to 0.01 will be moved onto the master surface.
+
+Example files: contact1, contact2.
+
+     Contents 
+
+
+##### node222.html
+*DENSITY
+
+     Contents 
+
+*DENSITY
+
+Keyword type: model definition, material
+
+With this option the mass density of a material can be defined. The mass
+density is required for a frequency analysis (*FREQUENCY), for a dynamic
+analysis (*DYNAMIC or *HEAT TRANSFER) and for a static analysis with gravity loads (GRAV) or centrifugal loads (CENTRIF). The density can be temperature dependent.
+
+First line:
+
+*DENSITY
+
+Following line:
+
+Mass density.
+
+Temperature.
+
+Repeat this line if needed to define complete temperature dependence.
+
+Example:
+
+*DENSITY
+7.8E-9
+
+defines a density with value 
+ for all temperatures.
+
+Example files: achtelc, segment1, segment2, beamf.
+
+
+##### node225.html
+*DFLUX
+
+     Contents 
+
+*DFLUX
+
+Keyword type: step
+
+This option allows the specification of distributed heat fluxes. These
+include surface flux (energy per unit of surface per unit of
+time) on element faces and volume flux in bodies (energy per unit of
+volume per unit of time). 
+
+In order to specify which face the flux is entering or leaving the
+faces are numbered. The numbering depends on the element type.
+
+For hexahedral elements the faces are numbered as follows (numbers are
+node numbers):
+
+Face 1: 1-2-3-4
+
+Face 2: 5-8-7-6
+
+Face 3: 1-5-6-2
+
+Face 4: 2-6-7-3
+
+Face 5: 3-7-8-4
+
+Face 6: 4-8-5-1
+
+for tetrahedral elements:
+
+Face 1: 1-2-3
+
+Face 2: 1-4-2
+
+Face 3: 2-4-3
+
+Face 4: 3-4-1
+
+for wedge elements:
+
+Face 1: 1-2-3
+
+Face 2: 4-5-6
+
+Face 3: 1-2-5-4
+
+Face 4: 2-3-6-5
+
+Face 5: 3-1-4-6
+
+for quadrilateral plane stress, plane strain and axisymmetric elements:
+
+Face 1: 1-2
+
+Face 2: 2-3
+
+Face 3: 3-4
+
+Face 4: 4-1
+
+Face N: in negative normal direction (only for plane stress)
+
+Face P: in positive normal direction (only for plane stress) 
+
+for triangular plane stress, plane strain and axisymmetric elements:
+
+Face 1: 1-2
+
+Face 2: 2-3
+
+Face 3: 3-1
+
+Face N: in negative normal direction (only for plane stress)
+
+Face P: in positive normal direction (only for plane stress)
+
+for quadrilateral shell elements:
+
+Face NEG or 1: in negative normal direction
+
+Face POS or 2: in positive normal direction
+
+Face 3: 1-2
+
+Face 4: 2-3
+
+Face 5: 3-4
+
+Face 6: 4-1
+
+for triangular shell elements:
+
+Face NEG or 1: in negative normal direction
+
+Face POS or 2: in positive normal direction
+
+Face 3: 1-2
+
+Face 4: 2-3
+
+Face 5: 3-1
+
+The labels NEG and POS can only be used for uniform flux and are introduced
+for compatibility with ABAQUS. Notice that the labels 1 and 2 correspond to
+the brick face labels of the 3D expansion of the shell (Figure 61).
+
+for beam elements:
+
+Face 1: in negative 1-direction
+
+Face 2: in positive 1-direction
+
+Face 3: in positive 2-direction
+
+Face 5: in negative 2-direction
+
+The beam face numbers correspond to the brick face labels of the 3D
+expansion of the beam (Figure 66).
+
+The surface flux is entered as a uniform flux with distributed flux
+type label Sx where x is the number of the face. For flux entering the
+body the magnitude of the flux is positive, for flux leaving the body
+it is negative. If the flux is nonuniform the label takes the form
+SxNUy and a user subroutine dflux.f must be provided specifying the
+value of the flux. The label can be up to 20 characters long. In
+particular, y can be used to distinguish different nonuniform flux
+patterns (maximum 16 characters).
+
+For body generated flux (energy per unit of time per unit of volume) the
+distributed flux type label is BF for uniform flux and BFNUy for
+nonuniform flux. For nonuniform flux the user subroutine dflux must be
+provided. Here too, y can be used to distinguish different nonuniform body
+flux patters (maximum 16 characters).
+
+Optional parameters are OP, AMPLITUDE and TIME DELAY. OP takes the value NEW or MOD.  OP=MOD is default and implies that the surface fluxes on different faces in previous steps are kept.  Specifying a
+distributed flux on a face for which such a flux was defined in a
+previous step replaces this value, if a flux was defined for the same face within the same step
+it is added. OP=NEW implies that all previous
+surface flux is removed. If multiple *DFLUX cards are present in a
+step this parameter takes effect for the first *DFLUX card only. 
+
+The AMPLITUDE parameter allows for the specification of an amplitude
+by which the flux values are scaled (mainly used for dynamic
+calculations). Thus, in that case the values entered on the *DFLUX
+card are interpreted as reference values to be multiplied with the
+(time dependent) amplitude value to obtain the actual value. At the
+end of the step the reference value is replaced by the actual value at
+that time. In subsequent
+steps this value is kept constant unless it is explicitly redefined or the
+amplitude is defined using TIME=TOTAL TIME in which case the amplitude keeps
+its validity. The AMPLITUDE parameter has no
+effect on nonuniform fluxes. Note that, if for a given degree of freedom in a given node a
+*DFLUX card with AMPLITUDE is defined, this amplitude applies to all *DFLUX
+cards previously defined within the same step for this degree of freedom in this
+node. Similarly, if for a given degree of freedom in a given node a *DFLUX
+card without AMPLITUDE is defined, no amplitude applies to all *DFLUX cards
+reviously defined within the same step for this degree of freedom in this node.
+
+The TIME DELAY parameter modifies the AMPLITUDE parameter. As such, TIME DELAY
+must be preceded by an AMPLITUDE name. TIME DELAY is a time shift by which the
+AMPLITUDE definition it refers to is moved in positive time direction. For
+instance, a TIME DELAY of 10 means that for time t the amplitude is taken
+which applies to time t-10. The TIME DELAY parameter must only appear once on
+one and the same keyword card.
+
+Notice that in case an element set is used on any line following *DFLUX this
+set should not contain elements from more than one of the following groups:
+{plane stress, plane strain, axisymmetric elements}, {beams, trusses},
+{shells, membranes}, {volumetric elements}.
+
+In order to apply a distributed flux to a surface the element set label
+underneath may be replaced by a surface name. In that case the ``x'' in the
+flux type label takes the value zero.
+
+First line:
+
+*DFLUX
+
+Enter any needed parameters and their value
+
+Following line for surface flux:
+
+Element number or element set label.
+
+Distributed flux type label.
+
+Actual magnitude of the load (power per unit of surface).
+
+Repeat this line if needed.
+
+Following line for body flux:
+
+Element number or element set label.
+
+Distributed flux type label (BF or BFNU).
+
+Actual magnitude of the load (power per unit of volume).
+
+Repeat this line if needed.
+
+Example:
+
+*DFLUX,AMPLITUDE=A1
+20,S1,10.
+
+assigns a flux entering the surface with magnitude 10 times
+the value of amplitude 
+A1 to surface 1 of element 20.
+
+Example:
+
+*DFLUX
+15,BF,10.
+
+assigns a body flux with magnitude 10. to element 15.
+
+Example files: oneel20df,beamhtbf.
+
+     Contents 
+
+
+##### node227.html
+*DLOAD
+
+     Contents 
+
+*DLOAD
+
+Keyword type: step
+
+This option allows the specification of distributed loads. These include
+constant pressure loading on element faces, edge loading on shells and mass loading (load per unit
+mass) either by gravity forces or by centrifugal forces. 
+
+For surface loading the faces of the elements are numbered as follows (for the
+node numbering of the elements see Section 3.1):
+
+for hexahedral elements:
+
+face 1: 1-2-3-4
+
+face 2: 5-8-7-6
+
+face 3: 1-5-6-2
+
+face 4: 2-6-7-3
+
+face 5: 3-7-8-4
+
+face 6: 4-8-5-1
+
+for tetrahedral elements:
+
+Face 1: 1-2-3
+
+Face 2: 1-4-2
+
+Face 3: 2-4-3
+
+Face 4: 3-4-1
+
+for wedge elements:
+
+Face 1: 1-2-3
+
+Face 2: 4-5-6
+
+Face 3: 1-2-5-4
+
+Face 4: 2-3-6-5
+
+Face 5: 3-1-4-6
+
+for quadrilateral plane stress, plane strain and axisymmetric elements:
+
+Face 1: 1-2
+
+Face 2: 2-3
+
+Face 3: 3-4
+
+Face 4: 4-1
+
+for triangular plane stress, plane strain and axisymmetric elements:
+
+Face 1: 1-2
+
+Face 2: 2-3
+
+Face 3: 3-1
+
+for beam elements:
+
+Face 1: pressure in 1-direction
+
+Face 2: pressure in 2-direction
+
+For shell elements no face number is needed since there is only one kind of loading:
+pressure in the direction of the normal on the shell. 
+
+The surface loading is entered as a uniform pressure with distributed
+load type label Px where x is the number of the face. Thus, for
+pressure loading the magnitude of the load is positive, for tension
+loading it is negative. For nonuniform pressure the label takes the
+form PxNUy, and the user subroutine dload.f must be provided. The label can be up to 20 characters long. In
+particular, y can be used to distinguish different nonuniform loading
+patterns (maximum 16 characters). A typical
+example of a nonuniform loading is the hydrostatic pressure. Another option is to assign the pressure of a fluid node to an element
+side. In that case the label takes the form PxNP, where NP stands for network
+pressure. The fluid node must be an corner node of a network element. Instead of a
+concrete pressure value the user must provide the fluid node number.
+
+Edge loading is only provided for shell elements. Its units are force per unit
+length. The label is EDNORx where x can take a value between one and three for
+triangular shells and between one and four for quadrilateral shells. This type
+of loading is locally orthogonal to the edge. Internally, it is replaced by a
+pressure load, since shell elements in CalculiX are expanded into volumetric elements. The
+numbering is as follows:
+
+for triangular shell elements:
+
+Edge 1: 1-2
+
+Edge 2: 2-3
+
+Edge 3: 3-1
+
+for quadrilateral shell elements:
+
+Edge 1: 1-2
+
+Edge 2: 2-3
+
+Edge 3: 3-4
+
+Edge 4: 4-1
+
+For centrifugal loading (label CENTRIF) the rotational speed square () and two
+points on the rotation axis are required, for gravity loading with known
+gravity vector (label GRAV) the size and direction of the gravity vector are to be
+given. Whereas more than one centrifugal load for one and the same set is not
+allowed, several gravity loads can be defined, provided the direction of the
+load varies. If the gravity vector is not known it can be calculated based on the
+momentaneous mass distribution of the system (label NEWTON). This requires the
+value of the Newton gravity constant by means of a *PHYSICAL
+  CONSTANTS card.
+
+The limit of one centrifugal load per set does not apply to linear dynamic
+(*MODAL DYNAMIC) and steady state (*STEADY
+  STATE DYNAMICS) calculations. Here, the limit is two. In this way a
+rotating eccentricity can be modeled. Prerequisite for the centrifugal loads to
+be interpreted as distinct is the choice of distinct rotation axes.
+
+Optional parameters are OP, AMPLITUDE, TIME DELAY, LOAD CASE and SECTOR. OP takes the value NEW or
+MOD. OP=MOD is default. For surface loads it 
+implies that the loads on different faces are kept from the previous step. Specifying a
+distributed load on a face for which such a load was defined in a
+previous step replaces this value, if a load was defined on the same face
+within the same step it is added. OP=NEW implies that all previous
+surface loading is removed. For mass loading the effect is similar. If multiple *DLOAD cards are present in a
+step this parameter takes effect for the first *DLOAD card only. 
+
+The AMPLITUDE parameter allows for the specification of an amplitude
+by which the force values are scaled (mainly used for dynamic
+calculations). Thus, in that case the values entered on the *DLOAD
+card are interpreted as reference values to be multiplied with the
+(time dependent) amplitude value to obtain the actual value. At the
+end of the step the reference value is replaced by the actual value at
+that time. In subsequent
+steps this value is kept constant unless it is explicitly redefined or the
+amplitude is defined using TIME=TOTAL TIME in which case the amplitude keeps
+its validity. For nonuniform loading the
+AMPLITUDE parameter has no effect. Note that, if for a given degree of freedom in a given node a
+*DLOAD card with AMPLITUDE is defined, this amplitude applies to all *DLOAD
+cards previously defined within the same step for this degree of freedom in this
+node. Similarly, if for a given degree of freedom in a given node a *DLOAD
+card without AMPLITUDE is defined, no amplitude applies to all *DLOAD cards
+reviously defined within the same step for this degree of freedom in this node.
+
+The TIME DELAY parameter modifies the AMPLITUDE parameter. As such, TIME DELAY
+must be preceded by an AMPLITUDE name. TIME DELAY is a time shift by which the
+AMPLITUDE definition it refers to is moved in positive time direction. For
+instance, a TIME DELAY of 10 means that for time t the amplitude is taken
+which applies to time t-10. The TIME DELAY parameter must only appear once on
+one and the same keyword card.
+
+The LOAD CASE parameter is only active in *STEADY STATE
+ DYNAMICS calculations with harmonic loading. LOAD CASE = 1 means that the
+ loading is real or in-phase.  LOAD CASE = 2 indicates that the load is
+ imaginary or equivalently phase-shifted by . Default is LOAD CASE =
+ 1. 
+
+The SECTOR parameter can only be used in *MODAL
+DYNAMIC and *STEADY STATE
+DYNAMICS calculations with cyclic symmetry. The datum
+sector (the sector which is modeled) is sector 1. The other sectors are
+numbered in increasing order in the rotational direction going from the slave
+surface to the master surface as specified by the *TIE
+card. Consequently, the SECTOR parameters allows to apply a distributed load to any
+element face in any sector.
+
+Notice that in case an element set is used on any line following *DLOAD this
+set should not contain elements from more than one of the following groups:
+{plane stress, plane strain, axisymmetric elements}, {beams, trusses},
+{shells, membranes}, {volumetric elements}.
+
+First line:
+
+*DLOAD
+
+Enter any needed parameters and their value
+
+Following line for surface loading:
+
+Element number or element set label.
+
+Distributed load type label.
+
+Actual magnitude of the load (for Px type labels) or fluid node number (for PxNU type labels)
+
+Repeat this line if needed.
+
+Example:
+
+*DLOAD,AMPLITUDE=A1
+Se1,P3,10.
+
+assigns a pressure loading with magnitude 10. times the amplitude curve of amplitude A1 to face number three of all elements belonging to set Se1.
+
+Example files: beamd.
+
+Following line for centrifugal loading:
+
+Element number or element set label.
+
+CENTRIF
+
+rotational speed square ()
+
+Coordinate 1 of a point on the rotation axis
+
+Coordinate 2 of a point on the rotation axis
+
+Coordinate 3 of a point on the rotation axis
+
+Component 1 of the normalized direction of the rotation axis
+
+Component 2 of the normalized direction of the rotation axis
+
+Component 3 of the normalized direction of the rotation axis
+
+Repeat this line if needed. 
+
+Example:
+
+*DLOAD
+Eall,CENTRIF,100000.,0.,0.,0.,1.,0.,0.
+
+Example files: achtelc, disk2.
+
+assigns centrifugal loading with 
+ about an axis
+through the point (0.,0.,0.) and with direction (1.,0.,0.) to all elements. 
+
+Following line for gravity loading with known gravity vector:
+
+Element number or element set label.
+
+GRAV
+
+Actual magnitude of the gravity vector.
+
+Coordinate 1 of the normalized gravity vector
+
+Coordinate 2 of the normalized gravity vector
+
+Coordinate 3 of the normalized gravity vector
+
+Repeat this line if needed. Here "gravity" really stands for any acceleration vector. 
+
+Example:
+
+*DLOAD
+Eall,GRAV,9810.,0.,0.,-1.
+
+assigns gravity loading in the negative z-direction with magnitude 9810. to all elements.
+
+Example files: achtelg, cube2.
+
+Following line for gravity loading based on the momentaneous mass distribution:
+
+Element number or element set label.
+
+NEWTON
+
+Repeat this line if needed. Only elements loaded by a NEWTON type loading are
+taken into account for the gravity calculation.
+
+Example:
+
+*DLOAD
+Eall,NEWTON
+
+triggers the calculation of gravity forces due to all mass belonging to the
+element of element set Eall.
+
+Example files: cubenewt.
+
+     Contents 
+
+
+##### node230.html
+*ELASTIC
+
+     Contents 
+
+*ELASTIC
+
+Keyword type: model definition, material
+
+This option is used to define the elastic properties of a material. There is
+one optional parameter TYPE. Default is TYPE=ISO, other values are TYPE=ORTHO
+and TYPE=ENGINEERING CONSTANTS for orthotropic materials and TYPE=ANISO for anisotropic materials. All constants may be temperature dependent.
+For orthotropic and fully anisotropic materials, the coefficients  satisfy the equation:
+
+(397)
+
+where  is the second Piola-Kirchhoff stress and  is the
+Lagrange deformation tensor (nine terms on the right hand side for each equation). For linear calculations, these reduce to the
+generic stress and strain tensors.
+
+An isotropic material can be defined as an anisotropic material by defining
+
+,
+
+ and
+
+, where  and  are the Lamé
+constants [18]. 
+
+First line:
+
+*ELASTIC
+
+Enter the TYPE parameter and its value, if needed
+
+Following line for TYPE=ISO:
+
+Young's modulus.
+
+Poisson's ratio.
+
+Temperature.
+
+Repeat this line if needed to define complete temperature dependence.
+
+Following lines, in a pair, for TYPE=ORTHO:
+First line of pair:
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+Second line of pair:
+
+.
+
+Temperature.
+
+Repeat this pair if needed to define complete temperature dependence.
+
+Following lines, in a pair, for TYPE=ENGINEERING CONSTANTS:
+First line of pair:
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+Second line of pair:
+
+.
+
+Temperature.
+
+Repeat this pair if needed to define complete temperature dependence.
+
+Following lines, in sets of 3, for TYPE=ANISO:
+First line of set:
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+Second line of set:
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+Third line of set:
+
+.
+
+.
+
+.
+
+.
+
+.
+
+Temperature.
+
+Repeat this set if needed to define complete temperature dependence.
+
+Example:
+
+*ELASTIC,TYPE=ORTHO
+500000.,157200.,400000.,157200.,157200.,300000.,126200.,126200.,
+126200.,294.
+
+defines an orthotropic material for temperature T=294. Since the definition includes values for only one temperature, they are valid for all temperatures.
+
+Example files: aniso, beampo1.
+
+     Contents 
+
+
+##### node233.html
+*ELEMENT
+
+     Contents 
+
+*ELEMENT
+
+Keyword type: model definition
+
+With this option elements are defined. There is one required
+parameter, TYPE and one optional parameter, ELSET. The parameter TYPE
+defines the kind of element which is being defined. The following
+types can be selected:
+
+General 3D solids
+
+C3D4 (4-node linear tetrahedral element)
+
+C3D6 (6-node linear triangular prism element)
+
+C3D8 (3D 8-node linear isoparametric element)
+
+C3D8R (the C3D8 element with reduced integration)
+
+C3D10 (10-node quadratic tetrahedral element)
+
+C3D15 (15-node quadratic triangular prism element)
+
+C3D20 (3D 20-node quadratic isoparametric element)
+
+C3D20R (the C3D20 element with reduced integration)
+
+``ABAQUS'' 3D solids for heat transfer (names are provided for compatibility)
+
+DC3D4: identical to C3D4
+
+DC3D6: identical to C3D6
+
+DC3D8: identical to C3D8
+
+DC3D10: identical to C3D10
+
+DC3D15: identical to C3D15
+
+DC3D20: identical to C3D20
+
+Shell elements
+
+S6 (6-node triangular shell element)
+
+S8 (8-node quadratic shell element)
+
+S8R (the S8 element with reduced integration)
+
+Plane stress elements
+
+CPS6 (6-node triangular plane stress element)
+
+CPS8 (8-node quadratic plane stress element)
+
+CPS8R (the CPS8 element with reduced integration)
+
+Plane strain elements
+
+CPE6 (6-node triangular plane strain element)
+
+CPE8 (8-node quadratic plane strain element)
+
+CPE8R (the CPS8 element with reduced integration)
+
+Axisymmetric elements
+
+CAX6 (6-node triangular axisymmetric element)
+
+CAX8 (8-node quadratic axisymmetric element)
+
+CAX8R (the CAX8 element with reduced integration)
+
+Beam elements
+
+B32 (3-node beam element)
+
+B32R (the B32 element with reduced integration)
+
+Special elements
+
+D (3-node network element)
+
+GAPUNI (2-node unidirectional gap element)
+
+Notice that the S8, S8R, CPS8, CPS8R, CPE8, CPE8R, CAX8, CAX8R, B32
+and B32R element are internally expanded into 20-node brick
+elements. Please have a look at Section 6.2 for details and decision criteria which element to take. The element choice determines to a large extent the quality of the results. Do not take element choice lightheartedly! The parameter ELSET is used to assign the elements to an element set. If the set already exists, the elements are ADDED to the set.
+
+First line:
+
+*ELEMENT
+
+Enter any needed parameters and their values.
+
+Following line:
+
+Element number.
+
+Node numbers forming the element. The order of nodes around the element is given in section 2.1. Use continuation lines for elements having more than 15 nodes (maximum 16 entries per line).
+
+Repeat this line if needed.
+
+Example:
+
+*ELEMENT,ELSET=Eall,TYPE=C3D20R
+1,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
+16,17,18,19,20
+
+defines one 20-node element with reduced integration and stores it in set Eall.
+
+Example files: beam8p, beam10p, beam20p.
+
+     Contents 
+
+
+##### node235.html
+*EL FILE
+
+     Contents 
+
+*EL FILE
+
+Keyword type: step
+
+This option is used to save selected element variables averaged at the nodal
+points in a frd file (extension .frd) for subsequent viewing by CalculiX
+GraphiX. The following element variables can be selected (the label is square
+brackets [] is the one used in the .frd file; for frequency calculations with
+cyclic symmetry both a real and an imaginary part may be stored, in all other cases only the
+real part is stored):
+
+CEEQ [PE]: equivalent creep strain (is converted internally into PEEQ
+  since the viscoplastic theory does not distinguish between the two;
+  consequently, the user will find PEEQ in the frd file, not CEEQ)
+
+E [TOSTRAIN (real),TOSTRAII (imaginary)]: strain. This is the total Lagrangian strain for (hyper)elastic
+materials and incremental plasticity and the total Eulerian strain for deformation plasticity.
+
+ECD [CURR]: electrical current density. This only applies to electromagnetic calculations.
+
+ENER [ENER]: the energy density.
+
+ERR [ERROR (real), ERRORI (imaginary)]: Extrapolation error estimator for stress calculations (cf. Section 6.12). Notice that ERR and ZZS
+  are mutually exclusive.
+
+HER [HERROR (real), HERRORI (imaginary)]: Extrapolation error estimator for heat transfer (cf. Section
+  6.12). 
+
+HFL [FLUX]: heat flux in structures. 
+
+HFLF [FLUX]: heat flux in CFD-calculations. 
+
+MAXE [MSTRAIN]: maximum of the absolute value of the worst principal strain at all times for
+  *FREQUENCY calculations with cyclic symmetry. It is
+  stored for nodes belonging to the node set with name STRAINDOMAIN. This node
+  set must have been defined by the user with the *NSET command. The worst principal strain is the maximum of the
+  absolute value of the principal strains times its original sign.
+
+MAXS [MSTRESS]: maximum of the absolute value of the worst principal stress at all times for
+  *FREQUENCY calculations with cyclic symmetry. It is
+  stored for nodes belonging to the node set with name STRESSDOMAIN. This node
+  set must have been defined by the user with the *NSET command. The worst principal stress is the maximum of the
+  absolute value of the principal stresses times its original sign.
+
+ME [MESTRAIN (real), MESTRAII (imaginary)]: strain. This is the mechanical  Lagrangian strain for (hyper)elastic
+materials and incremental plasticity and the mechanical Eulerian strain for
+deformation plasticity (mechanical strain = total strain - thermal strain).
+
+PEEQ [PE]: equivalent plastic strain.
+
+PHS [PSTRESS]: stress: magnitude and phase (only for *STEADY
+  STATE DYNAMICS calculations and
+*FREQUENCY calculations with cyclic symmetry).
+
+S [STRESS (real), STRESSI (imaginary)]: true (Cauchy) stress in structures. For beam elements this tensor is replaced
+  by the section forces if SECTION FORCES is selected.
+
+SF [STRESS]: total stress in CFD-calculations. 
+
+SVF [VSTRES]: viscous stress in CFD-calculations. 
+
+SDV [SDV]: the internal state variables.
+
+ZZS [ZZSTR (real), ZZSTRI (imaginary)]: Zienkiewicz-Zhu improved stress  [82],
+  [83](cf. Section 6.12). Notice that ZZS
+  and ERR are mutually exclusive.
+
+The selected variables are stored for the complete model. Due to the averaging process jumps at
+material interfaces are smeared out unless you model the materials on
+both sides of the interface independently and connect the coinciding
+nodes with MPC's.
+
+For frequency calculations with cyclic symmetry the eigenmodes are generated
+in pairs (different by a phase shift of 90 degrees). Only the first one of
+each pair is stored in the frd file. If S is selected (the stresses) two
+load cases are stored in the frd file: a loadcase labeled STRESS
+containing the real part of the stresses and a loadcase labeled STRESSI
+containing the imaginary part of the stresses. For all other variables only
+the real part is stored.
+
+The key ENER triggers the calculation of the internal energy. If it is
+absent no internal energy is calculated. Since in nonlinear
+calculations the internal energy at any time depends on the
+accumulated energy at all previous times, the selection of ENER in
+nonlinear calculations (geometric or material nonlinearities) must
+be made in the first step.
+
+The first occurrence of an *EL FILE keyword card within a step wipes
+out all previous element variable selections for file output. If no
+*EL FILE card is used within a step the selections of the previous
+step apply. If there is no previous step, no element variables will be stored.
+
+There are nine optional parameters: FREQUENCY, FREQUENCYF, GLOBAL, OUTPUT,
+SECTION FORCES, TIME POINTS, NSET, LAST ITERATIONS and CONTACT ELEMENTS. The parameters FREQUENCY and TIME POINTS are mutually exclusive. 
+
+FREQUENCY applies to
+nonlinear calculations where a step can consist of several
+increments. Default is FREQUENCY=1, which indicates that the results
+of all increments will be stored. FREQUENCY=N with N an integer
+indicates that the results of every Nth increment will be stored. The
+final results of a step are always stored. If you only want the final
+results, choose N very big. 
+The value of N applies to 
+*OUTPUT,*ELEMENT OUTPUT, 
+*EL FILE, *ELPRINT, 
+*NODE OUTPUT,
+*NODE FILE, *NODE PRINT,
+*FACE PRINT ,*CONTACT OUTPUT,
+*CONTACT FILE and *CONTACT PRINT. 
+If the FREQUENCY parameter is used
+for more than one of these keywords with conflicting values of N, the
+last value applies to all. A frequency parameter stays active across several steps
+until it is overwritten by another FREQUENCY value or the TIME POINTS
+parameter.
+
+The 3D fluid analogue of FREQUENCY is FREQUENCYF. In coupled calculations
+FREQUENCY applies to the thermomechanical output, FREQUENCYF to the 3D fluid output.
+
+With the parameter GLOBAL you tell the program whether you would like the
+results in the global rectangular coordinate system or in the local element
+system. If an *ORIENTATION card is applied to the element at stake, this card defines
+the local system. If no *ORIENTATION card is applied to the
+element, the local system coincides with the global rectangular
+system. Default value for the GLOBAL parameter is GLOBAL=YES,
+which means that the results are stored in the global system. If you prefer the
+results in the local system, specify GLOBAL=NO.
+
+The parameter OUTPUT can take the value 2D or 3D. This has only
+effect for 1d and 2d elements such as beams, shells, plane stress, plane
+strain and axisymmetric elements AND provided it is used in the first step. If
+OUTPUT=3D, the 1d and 2d elements are stored in their expanded three-dimensional
+form. In particular, the user has the advantage to see his/her 1d/2d elements
+with their real thickness dimensions. However, the node numbers are new and do
+not relate to the node numbers in the input deck. Once selected, this
+parameter is active in the complete calculation. If OUTPUT=2D the fields in the expanded elements are averaged to obtain
+the values in the nodes of the original 1d and 2d elements. In particular,
+averaging removes the bending stresses in beams and
+shells. Therefore, default for beams
+and shells is OUTPUT=3D, for plane stress, plane strain and axisymmetric
+elements it is OUTPUT=2D. If OUTPUT=3D is selected, the parameter NSET is deactivated.
+
+The selection of SECTION FORCES makes sense for beam elements
+only. Furthermore, SECTION FORCES and OUTPUT=3D are mutually exclusive (if
+both are used the last prevails). If
+selected, the stresses in the beam nodes are replaced by the section
+forces. They are calculated in a local coordinate system consisting of the
+1-direction 
+, the 2-direction 
+ and 3-direction or
+tangential direction 
+ (Figure 66). Accordingly, the stress components now have
+the following meaning:
+
+xx: Shear force in 1-direction 
+
+yy: Shear force in 2-direction
+
+zz: Normal force
+
+xy: Moment about the 1-direction 
+
+xz: Moment about the 2-direction
+
+yz: Torque
+
+For all elements except the beam elements the parameter SECTION FORCES has no
+effect. If SECTION FORCES is not selected the stress tensor is averaged across
+the beam section. 
+
+With the parameter TIME POINTS a time point sequence can be referenced,
+defined by a 
+*TIME POINTS keyword. In that case, output will be
+provided for all time points of the sequence within the step and additionally at the end of
+the step. No other output will be stored and the FREQUENCY parameter is not
+taken into account. Within a step only one time point sequence can be active. If more than
+one is specified, the last one defined on any of the keyword cards
+*NODE FILE, *EL FILE, *NODE
+  PRINT or *EL PRINT will be active. The TIME
+POINTS option should not be used together with the DIRECT option on the
+procedure card.  The TIME POINTS parameters stays active across several steps
+until it is replaced by another TIME POINTS value or the FREQUENCY parameter.
+
+The specification of a node set with the parameter NSET limits the output to
+the nodes contained in the set. Remember that the frd file is node based, so
+element results are also stored at the nodes after extrapolation from the
+integration points. For cyclic symmetric structures the usage of the
+parameter NGRAPH on the *CYCLIC SYMMETRY MODEL
+card leads to output of the results not only for the node set specified by the
+user (which naturally belongs to the base sector) but also for all
+corresponding nodes of the sectors generated by the NGRAPH parameter.  Notice
+that for cyclic symmetric structures in modal dynamic and steady state
+dynamics calculations the use of NSET is mandatory. In that case the stresses
+will only be correct at those nodes belonging to elements for which ALL nodal
+displacements were requested (e.g. by a *NODE FILE card).
+
+The parameter LAST ITERATIONS leads to the storage of the
+displacements in all iterations
+of the last increment in a file with name ResultsForLastIterations.frd (can be opened with CalculiX GraphiX). This is
+useful for debugging purposes in case of divergence. No such file is created if
+this parameter is absent. 
+
+Finally, the parameter CONTACT ELEMENTS  stores the contact elements which have
+been generated in each iteration in a file with the name
+contactelements.inp. When
+opening the frd file with CalculiX GraphiX these files can be read with the
+command ``read contactelements.inp'' and visualized by
+plotting the elements in the sets
+contactelements_st_in_at_it, where 
+is the step number,  the increment number,  the attempt number
+and  the iteration number.
+
+First line:
+
+*EL FILE
+
+Enter any needed parameters and their values.
+
+Second line:
+
+Identifying keys for the variables to be printed, separated by commas.
+
+Example:
+
+*EL FILE
+S,PEEQ
+
+requests that the (Cauchy) stresses and the equivalent plastic strain is stored in .frd format for subsequent viewing with CalculiX GraphiX.
+
+Example files: beamt, fullseg, segment1, segdyn.
+
+     Contents 
+
+
+##### node236.html
+*EL PRINT
+
+     Contents 
+
+*EL PRINT
+
+Keyword type: step
+
+This option is used to print selected element variables in an ASCII
+file with the name jobname.dat. Some of the element variables are
+printed in the integration points, some are whole element variables.
+The following  variables can be selected:
+
+Integration point variables
+
+true (Cauchy) stress in structures (key=S). 
+
+viscous stress in CFD calculations (key=SVF). 
+
+strain (key=E). This is the total Lagrangian strain for (hyper)elastic
+materials and incremental plasticity and the total Eulerian strain for deformation plasticity.
+
+strain (key=ME). This is the mechanical Lagrangian strain for (hyper)elastic
+materials and incremental plasticity and the mechanical Eulerian strain for
+deformation plasticity (mechanical strain = total strain - thermal strain).
+
+equivalent plastic strain (key=PEEQ)
+
+equivalent creep strain (key=CEEQ; is converted internally into PEEQ
+  since the viscoplastic theory does not distinguish between the two;
+  consequently, the user will find PEEQ in the dat file, not CEEQ)
+
+the energy density (key=ENER)
+
+the internal state variables (key=SDV)
+
+heat flux (key=HFL). This also applies to CFD-calculations involving
+  heat transfer.
+
+Whole element variables
+
+the internal energy (key=ELSE)
+
+the kinetic energy (key=ELKE)
+
+the volume (key=EVOL)
+
+The keys ENER and ELSE trigger the calculation of the internal
+energy. If they are
+absent no internal energy is calculated. Since in nonlinear
+calculations the internal energy at any time depends on the
+accumulated energy at all previous times, the selection of ENER and/or
+ELSE in
+nonlinear calculations (geometric or material nonlinearities) must
+be made in the first step.
+
+There are six parameters, ELSET, FREQUENCY, FREQUENCYF, TOTALS, GLOBAL and TIME POINTS. The parameter ELSET is required, defining the set of elements for which these stresses should be printed. If this card is omitted, no values are printed. Several *EL PRINT cards can be used within one and the same step.
+
+The parameters FREQUENCY and TIME POINTS are mutually exclusive. 
+
+The FREQUENCY parameter is optional and applies to
+nonlinear calculations where a step can consist of several
+increments. Default is FREQUENCY=1, which indicates that the results
+of all increments will be stored. FREQUENCY=N with N an integer
+indicates that the results of every Nth increment will be stored. The
+final results of a step are always stored. If you only want the final
+results, choose N very big. 
+The value of N applies to 
+*OUTPUT,*ELEMENT OUTPUT, 
+*EL FILE, *ELPRINT, 
+*NODE OUTPUT,
+*NODE FILE, *NODE PRINT,
+*FACE PRINT,*CONTACT OUTPUT,
+*CONTACT FILE and *CONTACT PRINT. 
+If the FREQUENCY parameter is used
+for more than one of these keywords with conflicting values of N, the
+last value applies to all. A frequency parameter stays active across several steps
+until it is overwritten by another FREQUENCY value or the TIME POINTS parameter.
+
+The 3D fluid analogue of FREQUENCY is FREQUENCYF. In coupled calculations
+FREQUENCY applies to the thermomechanical output, FREQUENCYF to the 3D fluid output.
+
+The optional parameter TOTALS only applies to whole element variables. If
+TOTALS=YES the sum of the variables for the whole element set is
+printed in addition to their value for each element in the set
+separately. If TOTALS=ONLY is selected the sum is printed but the
+individual element contributions are not. If TOTALS=NO (default) the
+individual contributions are printed, but their sum is not.
+
+With the parameter GLOBAL (optional) you tell the program whether you would like the
+results in the global rectangular coordinate system or in the local element
+system. If an *ORIENTATION card is applied to the element at stake, this card defines
+the local system. If no *ORIENTATION card is applied to the
+element, the local system coincides with the global rectangular
+system. Default value for the GLOBAL parameter is GLOBAL=NO,
+which means that the results are stored in the local system. If you prefer the
+results in the global system, specify GLOBAL=YES.
+
+With the parameter TIME POINTS a time point sequence can be referenced,
+defined by a 
+*TIME POINTS keyword. In that case, output will be
+provided for all time points of the sequence within the step and additionally at the end of
+the step. No other output will be stored and the FREQUENCY parameter is not
+taken into account. Within a step only one time point sequence can be active. If more than
+one is specified, the last one defined on any of the keyword cards
+*NODE FILE, *EL FILE, *NODE
+  PRINT,  *EL PRINT or *FACE PRINT will be active. The TIME
+POINTS option should not be used together with the DIRECT option on the
+procedure card.  The TIME POINTS parameters stays active across several steps
+until it is replaced by another TIME POINTS value or the FREQUENCY parameter.
+
+The first occurrence of an *EL FILE keyword card within a step wipes
+out all previous element variable selections for print output. If no
+*EL FILE card is used within a step the selections of the previous
+step apply, if any.
+
+First line:
+
+*EL PRINT
+
+Enter the parameter ELSET and its value.
+
+Second line:
+
+Identifying keys for the variables to be printed, separated by commas.
+
+Example:
+
+*EL PRINT,ELSET=Copper
+E
+
+requests to store the strains at the integration points in the elements of set Copper in the .dat file.
+
+Example files: beampt, beamrb, beamt4.
+
+     Contents 
+
+
+##### node237.html
+*ELSET
+
+     Contents 
+
+*ELSET
+
+Keyword type: model definition
+
+This option is used to assign elements to an element set. The
+parameter ELSET containing the name of the set is required (maximum 80 characters), whereas
+the parameter GENERATE (without value) is optional. If present,
+element ranges can be expressed by their initial value, their final
+value, and an increment. If a set with the same name already exists,
+it is reopened and complemented. The name of a set is case insensitive. Internally,
+it is modified into upper case and a 'E' is appended to denote it as
+element set.
+
+First line:
+
+*ELSET
+
+Enter any needed parameters and their values.
+
+Following line if the GENERATE parameter is omitted:
+
+List of elements and/or sets of elements previously defined to be assigned to this element set (maximum 16 entries per line).
+
+Repeat this line if needed.
+
+Following line if the GENERATE parameter is included:
+
+First element in set.
+
+Last element in set.
+
+Increment in element numbers between elements in the set. Default is 1.
+
+Repeat this line if needed.
+
+Example:
+
+*ELSET,ELSET=E1,GENERATE
+20,25
+*ELSET,ELSET=E2
+E1,50,51
+
+assigns the elements with numbers 20, 21, 22, 23, 24 and 25 to element
+set E1 and the elements with numbers 20, 21, 22, 23, 24, 25 (= set
+E1), 50 and 51 to element set E2.
+
+Example files: segment, beampo1, beampset.
+
+     Contents 
+
+
+##### node238.html
+*END STEP
+
+     Contents 
+
+*END STEP
+
+Keyword type: step
+
+This option concludes the definition of a step.
+
+First and only line:
+
+*END STEP
+
+Example:
+
+*END STEP
+
+concludes a step. Each *STEP card must at some point be followed by an *END STEP card.
+
+Example files: beamstraight, beamt.
+
+
+##### node24.html
+Element Types
+
+     Contents 
+
+Element Types
+
+There are a lot of different elements implemented in CalculiX, therefore it is
+not always easy to select the right one. In general, one can say that the
+quadratic elements are the most stable and robust elements in CalculiX. If you
+are not a finite element specialist the use of quadratic elements is strongly
+suggested. This includes:
+
+hexahedral elements: C3D20R
+
+tetrahedral elements: C3D10
+
+axisymmetric elements: CAX8R
+
+plane stress elements: CPS8R
+
+plane strain elements: CPE8R
+
+shell elements: S8R
+
+beam elements: B32R
+
+Other elements frequently exhibit unsatisfactory behavior in certain
+instances, e.g. the C3D8 element in bending states. Unless you are a
+specialist, do not use such elements. Detailed information is given underneath.
+
+Subsections
+
+Eight-node brick element (C3D8 and F3D8)
+C3D8R
+Incompatible mode eight-node brick element (C3D8I)
+Twenty-node brick element (C3D20)
+C3D20R
+Four-node tetrahedral element (C3D4 and F3D4)
+Ten-node tetrahedral element (C3D10)
+Six-node wedge element (C3D6 and F3D6)
+Fifteen-node wedge element (C3D15)
+Three-node shell element (S3)
+Four-node shell element (S4 and S4R)
+Six-node shell element (S6)
+Eight-node shell element (S8 and S8R)
+Three-node membrane element (M3D3)
+Three-node membrane element (M3D4 and M3D4R)
+Three-node membrane element (M3D6)
+Three-node membrane element (M3D8 and M3D8R)
+Three-node plane stress element (CPS3)
+Four-node plane stress element (CPS4 and CPS4R)
+Six-node plane stress element (CPS6)
+Eight-node plane stress element (CPS8 and CPS8R) 
+Three-node plane strain element (CPE3)
+Four-node plane strain element (CPE4 and CPE4R)
+Six-node plane strain element (CPE6)
+Eight-node plane strain element (CPE8 and CPE8R)
+Three-node axisymmetric element (CAX3)
+Four-node axisymmetric element (CAX4 and CAX4R)
+Six-node axisymmetric element (CAX6)
+Eight-node axisymmetric element (CAX8 and CAX8R)
+Two-node beam element (B31 and B31R)
+Three-node beam element (B32 and B32R)
+Two-node truss element (T3D2)
+Three-node truss element (T3D3)
+Three-node network element (D)
+Two-node unidirectional gap element (GAPUNI)
+Two-node 3-dimensional dashpot (DASHPOTA)
+Two-node 3-dimensional spring (SPRINGA)
+One-node coupling element (DCOUP3D)
+
+
+##### node240.html
+*EXPANSION
+
+     Contents 
+
+*EXPANSION
+
+Keyword type: model definition, material
+
+This option is used to define the thermal expansion coefficients of a material. They are interpreted as total expansion coefficients with respect to a reference temperature , i.e. the thermal strain 
+ of a material at a final temperature T and with initial temperature  is determined by 
+
+(398)
+
+where  is the thermal coefficient at a temperature T. There are two optional parameters TYPE and ZERO. Default for TYPE is TYPE=ISO, other values are TYPE=ORTHO for orthotropic materials and TYPE=ANISO for anisotropic materials. All constants may be temperature dependent. The parameter ZERO is used to determine the reference temperature, default is 0.
+
+First line:
+
+*EXPANSION
+
+Enter the TYPE and ZERO parameters and their values, if needed
+
+Following line for TYPE=ISO:
+
+.
+
+Temperature.
+
+Repeat this line if needed to define complete temperature dependence.
+
+Following line for TYPE=ORTHO:
+
+.
+
+.
+
+.
+
+Temperature.
+
+Repeat this line if needed to define complete temperature dependence.
+
+Following line for TYPE=ANISO:
+
+.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+Temperature.
+
+Repeat this line if needed to define complete temperature dependence.
+
+Example:
+
+*EXPANSION,ZERO=273.
+12.E-6,373.
+20.E-6,573.
+
+tells you that the thermal strain in a body made of this material is
+
+ if heated from T=273 to T=373, and 
+ if heated from T=273 to T=573.
+
+Example files: beamt, beamt2.
+
+     Contents 
+
+
+##### node242.html
+*FILM
+
+     Contents 
+
+*FILM
+
+Keyword type: step
+
+This option allows the specification of film heat transfer. This is
+convective heat transfer of a surface at temperature  and with film
+coefficient  to the environment at temperature . The
+environmental temperature  is also called the sink
+temperature. The convective heat flux  satisfies:
+
+(399)
+
+In order to specify which face the flux is entering or leaving the
+faces are numbered. The numbering depends on the element type.
+
+For hexahedral elements the faces are numbered as follows (numbers are
+node numbers):
+
+Face 1: 1-2-3-4
+
+Face 2: 5-8-7-6
+
+Face 3: 1-5-6-2
+
+Face 4: 2-6-7-3
+
+Face 5: 3-7-8-4
+
+Face 6: 4-8-5-1
+
+for tetrahedral elements:
+
+Face 1: 1-2-3
+
+Face 2: 1-4-2
+
+Face 3: 2-4-3
+
+Face 4: 3-4-1
+
+and for wedge elements:
+
+Face 1: 1-2-3
+
+Face 2: 4-5-6
+
+Face 3: 1-2-5-4
+
+Face 4: 2-3-6-5
+
+Face 5: 3-1-4-6
+
+for quadrilateral plane stress, plane strain and axisymmetric elements:
+
+Face 1: 1-2
+
+Face 2: 2-3
+
+Face 3: 3-4
+
+Face 4: 4-1
+
+Face N: in negative normal direction (only for plane stress)
+
+Face P: in positive normal direction (only for plane stress) 
+
+for triangular plane stress, plane strain and axisymmetric elements:
+
+Face 1: 1-2
+
+Face 2: 2-3
+
+Face 3: 3-1
+
+Face N: in negative normal direction (only for plane stress)
+
+Face P: in positive normal direction (only for plane stress) 
+
+for quadrilateral shell elements:
+
+Face NEG or 1: in negative normal direction
+
+Face POS or 2: in positive normal direction
+
+Face 3: 1-2
+
+Face 4: 2-3
+
+Face 5: 3-4
+
+Face 6: 4-1
+
+for triangular shell elements:
+
+Face NEG or 1: in negative normal direction
+
+Face POS or 2: in positive normal direction
+
+Face 3: 1-2
+
+Face 4: 2-3
+
+Face 5: 3-1
+
+The labels NEG and POS can only be used for uniform, non-forced convection and are introduced
+for compatibility with ABAQUS. Notice that the labels 1 and 2 correspond to
+the brick face labels of the 3D expansion of the shell (Figure 61).
+
+for beam elements:
+
+Face 1: in negative 1-direction
+
+Face 2: in positive 1-direction
+
+Face 3: in positive 2-direction
+
+Face 5: in negative 2-direction
+
+The beam face numbers correspond to the brick face labels of the 3D
+expansion of the beam (Figure 66).
+
+Film flux characterized by a uniform film coefficient is entered by
+the distributed flux 
+type label Fx where x is the number of the face, followed by the sink
+temperature and the film coefficient. If the film
+coefficient is nonuniform the label takes the form 
+FxNUy and a user subroutine film.f must be provided specifying the
+value of the film coefficient and the sink temperature. The label can be up to 20 characters long. In
+particular, y can be used to distinguish different nonuniform film coefficient
+patterns (maximum 16 characters).
+
+In case the element face is adjacent to a moving fluid the temperature of
+which is also unknown (forced convection), the distributed flux type label is
+FxFC where x is the number of the face. It is followed by the fluid node
+number it exchanges convective heat with and the film coefficient. To define a
+nonuniform film coefficient the label FxFCNUy must be used and a subroutine
+film.f defining the film coefficient be provided. The label can be up to 20 characters long. In
+particular, y can be used to distinguish different nonuniform film coefficient
+patterns (maximum 14 characters).
+
+Optional parameters are OP, AMPLITUDE, TIME DELAY, FILM AMPLITUDE and FILM
+TIME DELAY. OP takes the value NEW or MOD. OP=MOD is default and
+implies that the film fluxes on different faces are kept over all
+steps starting from the last perturbation step. Specifying a
+film flux on a face for which such a flux was defined in a
+previous step replaces this value. OP=NEW implies that all previous
+film flux is removed. If multiple *FILM cards are present in a
+step this parameter takes effect for the first *FILM card only. 
+
+The AMPLITUDE parameter allows for the specification of an amplitude
+by which the sink temperature is scaled (mainly used for dynamic
+calculations). Thus, in that case the sink temperature values entered on the *FILM
+card are interpreted as reference values to be multiplied with the
+(time dependent) amplitude value to obtain the actual value. At the
+end of the step the reference value is replaced by the actual value at
+that time. In subsequent
+steps this value is kept constant unless it is explicitly redefined or the
+amplitude is defined using TIME=TOTAL TIME in which case the amplitude keeps
+its validity. The AMPLITUDE parameter has no
+effect on nonuniform and forced convective fluxes. Note that, if for a given degree of freedom in a given node a
+*FILM card with AMPLITUDE is defined, this amplitude applies to all *FILM
+cards previously defined within the same step for this degree of freedom in this
+node. Similarly, if for a given degree of freedom in a given node a *FILM
+card without AMPLITUDE is defined, no amplitude applies to all *FILM cards
+reviously defined within the same step for this degree of freedom in this
+node. A similar logic applies to the FILM AMPLITUDE parameter.
+
+The TIME DELAY parameter modifies the AMPLITUDE parameter. As such, TIME DELAY
+must be preceded by an AMPLITUDE name. TIME DELAY is a time shift by which the
+AMPLITUDE definition it refers to is moved in positive time direction. For
+instance, a TIME DELAY of 10 means that for time t the amplitude is taken
+which applies to time t-10. The TIME DELAY parameter must only appear once on
+one and the same keyword card.
+
+The FILM AMPLITUDE parameter allows for the specification of an amplitude
+by which the film coefficient is scaled (mainly used for dynamic
+calculations). Thus, in that case the film coefficient values entered on the *FILM
+card are interpreted as reference values to be multiplied with the
+(time dependent) amplitude value to obtain the actual value. At the
+end of the step the reference value is replaced by the actual value at
+that time, for use in subsequent steps. The FILM AMPLITUDE parameter has no
+effect on nonuniform fluxes.
+
+The FILM TIME DELAY parameter modifies the FILM AMPLITUDE parameter. As such,
+FILM TIME DELAY
+must be preceded by an FILM AMPLITUDE name. FILM TIME DELAY is a time shift by which the
+FILM AMPLITUDE definition it refers to is moved in positive time direction. For
+instance, a FILM TIME DELAY of 10 means that for time t the amplitude is taken
+which applies to time t-10. The FILM TIME DELAY parameter must only appear once on
+one and the same keyword card.
+
+Notice that in case an element set is used on any line following *FILM this
+set should not contain elements from more than one of the following groups:
+{plane stress, plane strain, axisymmetric elements}, {beams, trusses},
+{shells, membranes}, {volumetric elements}.
+
+In order to apply film conditions to a surface the element set label
+underneath may be replaced by a surface name. In that case the ``x'' in the
+flux type label takes the value zero.
+
+First line:
+
+*FILM
+
+Enter any needed parameters and their value
+
+Following line for uniform, explicit film conditions:
+
+Element number or element set label.
+
+Film flux type label (Fx).
+
+Sink temperature.
+
+Film coefficient.
+
+Repeat this line if needed.
+
+Following line for nonuniform, explicit film conditions:
+
+Element number or element set label.
+
+Film flux type label (FxNUy).
+
+Repeat this line if needed.
+
+Following line for forced convection with uniform film conditions:
+
+Element number or element set label.
+
+Film flux type label (FxFC).
+
+Fluid node.
+
+Film coefficient.
+
+Repeat this line if needed.
+
+Following line for forced convection with nonuniform film conditions:
+
+Element number or element set label.
+
+Film flux type label (FxFCNUy).
+
+Fluid node.
+
+Repeat this line if needed.
+
+Example:
+
+*FILM
+20,F1,273.,.1
+
+assigns a film flux to face 1 of element 20 with a film coefficient of 0.1 and a sink
+temperature of 273.
+
+Example files: oneel20fi.
+
+     Contents 
+
+
+##### node245.html
+*FREQUENCY
+
+     Contents 
+
+*FREQUENCY
+
+Keyword type: step
+
+This procedure is used to determine eigenfrequencies and the
+corresponding eigenmodes of a structure. The frequency range of
+interest can be specified by entering its lower and upper
+value. However, internally only as many frequencies are calculated as
+requested in the first field beneath the *FREQUENCY keyword
+card. Accordingly, if the highest calculated frequency is smaller than
+the upper value of the requested frequency range, there is no
+guarantee that all eigenfrequencies within the requested range were
+calculated. If the PERTURBATION parameter is used in the *STEP card, the load active in the last *STATIC step, if any, will be taken as preload. Otherwise, no preload will be active.
+
+There are four optional parameters SOLVER, STORAGE, GLOBAL and CYCMPC.
+SOLVER specifies which solver is used to perform a
+decomposition of the linear equation system. This decomposition is done only
+once. It is repeatedly used in the iterative procedure determining the eigenvalues. The following solvers
+can be selected:
+
+the SGI solver
+
+PARDISO
+
+SPOOLES [3,4]. 
+
+TAUCS 
+
+MATRIXSTORAGE. This is not really a solver. Rather, it is an option
+  allowing the user to store the stiffness and mass matrix.
+
+Default is the first solver which has been installed of the following list:
+SGI, PARDISO, SPOOLES and TAUCS. If none is installed, no eigenvalue analysis can be performed.
+
+The SGI solver is the fastest, but is is proprietary: if you own SGI
+hardware you might have gotten the scientific software package as well, which
+contains the SGI sparse system solver. SPOOLES is also very fast, but has no
+out-of-core capability: the size of systems you can solve is limited by your
+RAM memory. With 2GB of RAM you can solve up to 250,000 equations. TAUCS is
+also good, but my experience is limited to the  decomposition, which
+only applies to positive definite systems. It has an out-of-core capability
+and also offers a  decomposition, however, I was not able to run either of
+them so far. PARDISO is the Intel proprietary solver.
+
+If the MATRIXSTORAGE option is used, the stiffness and mass matrices are
+stored in files jobname.sti and jobname.mas, respectively. These are ASCII
+files containing the nonzero entries (occasionally, they can be zero;
+however, none of the entries which are not listed are nonzero). Each line
+consists of two integers and one real: the row number, the column number and
+the corresponding value. The entries are listed column per
+column. In addition, a file jobname.dof is created. It has as many entries as
+there are rows and columns in the stiffness and mass matrix. Each line
+contains a real number of the form ``a.b''. Part a is the node number and
+b is the global degree of freedom corresponding to selected row. Notice that
+the program stops after creating these files. No further steps are
+treated. Consequently, *FREQUENCY, MATRIXSTORAGE only makes sense as the last
+step in a calculation. 
+
+The parameter STORAGE indicates whether the eigenvalues, eigenmodes, mass and
+stiffness matrix should be stored in binary form in file jobname.eig for
+further use in a *MODAL DYNAMICS or *STEADY STATE DYNAMICS procedure. Default
+is STORAGE=NO. Specify STORAGE=YES if storage is requested.
+
+The parameters GLOBAL and CYCMPC only make sense in the presence of
+SOLVER=MATRIXSTORAGE. GLOBAL indicates whether the matrices should be stored
+in global coordinates, irrespective of whether a local coordinates system for
+any of the nodes in the structure was defined. Default is GLOBAL=YES. For
+GLOBAL=NO the matrices are stored in local coordinates and the directions in
+file jobname.dof are local directions. Notice that the GLOBAL=NO only works if no single or multiple point constrains were defined and
+one and the same coordinate system was defined for ALL nodes in the
+structure. The second parameter (CYCMPC) specifies whether any cyclic multiple point
+constraints should remain active while assembling the stiffness and mass matrix
+before storing them. Default is CYCMPC=ACTIVE. CYCMPC=INACTIVE means that all
+cyclic MPC's and any other MPC's containing dependent nodes belonging to
+cyclic MPC's are removed before assembling the matrices. The CYCMPC parameter
+only makes sense if GLOBAL=YES, since only then are MPC's allowed. 
+
+For the iterative eigenvalue procedure ARPACK [41] is
+used. The eigenfrequencies are always stored in file jobname.dat. 
+
+At the start
+of a frequency calculation all single point constraint boundary conditions,
+which may be zero due to previous steps, are set to zero.
+
+First line:
+
+*FREQUENCY
+
+Second line:
+
+Number of eigenfrequencies desired.
+
+Lower value of requested eigenfrequency range (in cycles/time; default:0).
+
+default: ).
+
+Example:
+
+*FREQUENCY
+10
+
+requests the calculation of the 10 lowest eigenfrequencies and corresponding eigenmodes. 
+
+Example files: beam8f, beamf.
+
+     Contents 
+
+
+##### node250.html
+*HEAT TRANSFER
+
+     Contents 
+
+*HEAT TRANSFER
+
+Keyword type: step
+
+This procedure is used to perform a pure heat transfer analysis. A heat transfer
+analysis is always nonlinear since the material properties depend on the
+solution, i.e. the temperature.
+
+There are nine optional parameters: SOLVER, DIRECT, STEADY STATE, FREQUENCY,
+MODAL DYNAMIC, STORAGE, DELTMX, TIME RESET and TOTAL TIME AT START. 
+
+SOLVER determines the
+package used to solve the ensuing system of equations. The following solvers
+can be selected:
+
+the SGI solver
+
+PARADISO
+
+SPOOLES [3,4]. 
+
+TAUCS 
+
+the iterative solver by Rank and Ruecker [62], which is based on
+  the algorithms by Schwarz [66]. 
+
+Default is the first solver which has been installed of the following list:
+SGI, PARDISO, SPOOLES and TAUCS. If none is installed, the default is the iterative solver, which comes with the CalculiX
+package.
+
+The SGI solver is the fastest, but is is proprietary: if you own SGI
+hardware you might have gotten the scientific software package as well, which
+contains the SGI sparse system solver. SPOOLES is also very fast, but has no
+out-of-core capability: the size of systems you can solve is limited by your
+RAM memory. With 2GB of RAM you can solve up to 250,000 equations. TAUCS is
+also good, but my experience is limited to the  decomposition, which
+only applies to positive definite systems. It has an out-of-core capability
+and also offers a  decomposition, however, I was not able to run either of
+them so far. Next comes the iterative solver. If SOLVER=ITERATIVE SCALING is
+selected, the pre-conditioning is limited to a scaling of the diagonal terms,
+SOLVER=ITERATIVE CHOLESKY triggers Incomplete Cholesky
+pre-conditioning. Cholesky pre-conditioning leads to a better convergence and
+maybe to shorter execution times, however, it requires additional storage
+roughly corresponding to the non-zeros in the matrix. If you are short of
+memory, diagonal scaling might be your last resort. The iterative methods
+perform well for truly three-dimensional structures. For instance,
+calculations for a hemisphere were about nine times faster with the ITERATIVE
+SCALING solver, and three times faster with the ITERATIVE CHOLESKY solver than
+with SPOOLES. For two-dimensional structures such as plates or shells, the
+performance might break down drastically and convergence often requires the
+use of Cholesky pre-conditioning. SPOOLES (and any of the other direct solvers)
+performs well in most situations with emphasis on slender structures but
+requires much more storage than the iterative solver. PARDISO is the Intel proprietary solver.
+
+The parameter DIRECT indicates that automatic incrementation should be
+switched off. The increments will have the fixed length specified by the user
+on the second line.
+
+The parameter STEADY STATE indicates that only the steady state should be
+calculated. For such an analysis the loads are by default applied in a linear way. Other loading
+patterns can be defined by an *AMPLITUDE card. If the
+STEADY STATE parameter is absent, the calculation is assumed to be time
+dependent and a transient analysis is performed. For a transient analysis the
+specific heat of the materials involved must be provided and the loads are by
+default applied by their full strength at the start of the step.
+
+In a static step, loads are by default applied in a linear way. Other loading
+patterns can be defined by an *AMPLITUDE card.
+
+The parameter FREQUENCY indicates that a frequency calculation should
+be performed. In a frequency step the homogeneous governing equation is
+solved, i.e. no loading applies, and the corresponding eigenfrequencies and
+eigenmodes are determined. This option is especially useful if the heat
+transfer option is used as an alias for true Helmholtz-type problems, e.g. in
+acoustics. The option FREQUENCY cannot (yet) be applied to cyclic symmetry
+calculations.
+
+The parameter MODAL DYNAMIC is used for dynamic calculations in which
+the response is built as a linear combination of the eigenmodes of the
+system. It must be preceded by a *HEAT TRANSFER, FREQUENCY,STORAGE=YES procedure, either
+in the same deck, or in a previous run, either of which leads to the creation
+of a file with name jobname.eig containing the eigenvalues and eigenmodes of
+the system. A MODAL DYNAMIC procedure is necessarily linear and ideally suited
+of problems satisfying the classical wave equation (Helmholtz problem
+characterized by a second derivative in time, thus exhibiting a hyperbolic
+behavior), e.g
+linear acoustics. 
+
+The parameter STORAGE indicates whether the eigenvalues, eigenmodes, mass and
+stiffness matrix should be stored in binary form in file jobname.eig for
+further use in a *MODAL DYNAMICS or *STEADY STATE DYNAMICS procedure. Default
+is STORAGE=NO. Specify STORAGE=YES if storage is requested.
+
+The parameter DELTMX can be used to limit the temperature change in two
+subsequent increments. If the temperature change exceeds DELTMX the increment
+is restarted with a size equal to  times DELTMX divided by the
+temperature change. The default for  is 0.85, however, it can be changed
+by the *CONTROLS keyword. DELTMX is only active in transient calculations. Default value is .
+
+The parameter TIME RESET can be used to force the total time at the
+end of the present step to coincide with the total time at the end of the
+previous step. If there is no previous step the targeted total time is
+zero. If this parameter is absent the total time at the end of the present step is the
+total time at the end of the previous step plus the time period of the present
+step (2nd parameter underneath the *HEAT TRANSFER keyword). Consequently, if the time
+at the end of the previous step is 10. and the present time period is 1., the
+total time at the end of the present step is 11. If the TIME RESET parameter
+is used, the total time at the beginning of the present step is 9. and at the
+end of the present step it will be 10. This is sometimes useful if
+transient heat transfer calculations are preceded by a stationary heat
+transfer step to reach steady state conditions at the start of the transient
+heat transfer calculations. Using the TIME RESET parameter in the stationary
+step (the first step in the calculation) will lead to a zero total time at the start of the subsequent
+instationary step. 
+
+Finally, the parameter TOTAL TIME AT START can be used to set the total time
+at the start of the step to a specific value.
+
+First line:
+
+*HEAT TRANSFER
+
+Enter any needed parameters and their values.
+
+Second line if FREQUENCY nor MODAL DYNAMIC is not selected:
+
+Initial time increment. This value will be modified due to automatic incrementation, unless the parameter DIRECT was specified (default 1.).
+
+Time period of the step (default 1.).
+
+Minimum time increment allowed. Only active if DIRECT is not specified. Default is the initial time increment or 1.e-5 times the time period of the step, whichever is smaller.
+
+Maximum time increment allowed. Only active if DIRECT is not specified. Default is 1.e+30.
+
+Example:
+
+*HEAT TRANSFER,DIRECT
+.1,1.
+
+defines a static step and selects the SPOOLES solver as linear equation solver
+in the step (default). The second line indicates that the initial time increment is .1 and the total step time is 1. Furthermore, the parameter DIRECT leads to a fixed time increment. Thus, if successful, the calculation consists of 10 increments of length 0.1.
+
+Example files: beamhtcr, oneel20fi, oneel20rs.
+
+Second line if FREQUENCY is selected:
+
+Number of eigenfrequencies desired.
+
+Lower value of requested eigenfrequency range (in cycles/time; default:0).
+
+default: ).
+
+Example:
+
+*HEAT TRANSFER,FREQUENCY
+8
+
+defines a frequency step for the heat transfer equation. The eight lowest
+eigenvalues and corresponding eigenmodes are calculated. Notice that for the
+heat equation the following relation applies between the eigenvalue 
+and eigenfrequency :
+
+(401)
+
+If, on the other hand, the heat transfer option is used as an alias for the
+Helmholtz equation, e.g. for acoustic problems, the same relationship as in
+elastodynamics
+
+(402)
+
+applies.
+
+Second line if MODAL DYNAMIC is selected:
+
+Initial time increment. This value will be modified due to automatic incrementation, unless the parameter DIRECT was specified (default 1.).
+
+Time period of the step (default 1.).
+
+Example files: aircolumn.
+
+     Contents 
+
+
+##### node254.html
+*INITIAL CONDITIONS
+
+     Contents 
+
+*INITIAL CONDITIONS
+
+Keyword type: model definition
+
+This option is used to define initial temperatures, initial velocities,
+initial stresses and initial plastic strains. There
+are two parameters: TYPE and USER. The parameter TYPE is required. It can take
+the following values:
+
+TYPE=DISPLACEMENT: initial displacements
+
+TYPE=FLUID VELOCITY: initial fluid velocities for 3D fluid calculations
+
+TYPE=MASS FLOW: initial mass flow for networks
+
+TYPE=PLASTIC STRAIN: initial inelastic strains
+
+TYPE=PRESSURE: initial static fluid pressures for 3D fluid calculations
+
+TYPE=SOLUTION: initial internal variables
+
+TYPE=STRESS: initial stresses
+
+TYPE=TEMPERATURE: initial temperatures for structural, network or 3D
+  fluid calculations
+
+TYPE=TOTAL PRESSURE: initial total pressures for network calculations
+
+TYPE=VELOCITY: initial structural velocities (for dynamic calculations)
+
+For shell elements TYPE=TEMPERATURE can be used to define an initial temperature
+gradient in addition
+to an initial temperature. The temperature applies to nodes in the reference
+surface, the gradient acts in normal direction. For beam elements two
+gradients can be defined: one in 1-direction and one in
+2-direction. Default for the gradients is zero.
+
+The plastic strain components defined with this option are subtracted from the
+strain components computed from the displacement field. If thermal strains are
+relevant they are additionally subtracted. The resulting strain is used to
+compute the stress and tangent stiffness matrix using the appropriate
+constitutive equations.  
+
+The parameter USER can only be used if TYPE=STRESS or TYPE=SOLUTION is specified. In that case,
+the user must define the initial stresses or internal variables by user routine
+sigini.f or sdvini.f,
+respectively. 
+
+Please note that vector and tensor quantities have to be provided in the
+GLOBAL (rectangular) coordinate system, no matter whether an *ORIENTATION card
+or *TRANSFORM card applies to the corresponding element or node, respectively.
+
+First line:
+
+*INITIAL CONDITIONS
+
+Enter any needed parameters and their values.
+
+Following line for TYPE=DISPLACEMENT:
+
+Node number or node set label.
+
+Degree of freedom in the GLOBAL coordinate system.
+
+Magnitude of the displacement.
+
+Following line for TYPE=PLASTIC STRAIN:
+
+Element number.
+
+Integration point number.
+
+Value of first plastic strain component (xx) in the GLOBAL coordinate
+  system x-y-z.
+
+Value of second plastic strain component (yy) in the GLOBAL coordinate system x-y-z.
+
+Value of third plastic strain component (zz) in the GLOBAL coordinate system x-y-z.
+
+Value of fourth plastic strain component (xy) in the GLOBAL coordinate system x-y-z.
+
+Value of fifth plastic strain component (xz) in the GLOBAL coordinate system x-y-z.
+
+Value of sixth plastic strain component (yz) in the GLOBAL coordinate system x-y-z.
+
+Repeat this line if needed. The strain components should be given as Lagrange
+strain components for nonlinear calculations and linearized strain components
+for linear computations. 
+
+Following line for TYPE=PRESSURE, TYPE=TOTAL PRESSURE or TYPE=MASS FLOW:
+
+Node number or node set label.
+
+Static pressure, total pressure or mass flow value at the node.
+
+Repeat this line if needed.
+
+Following line for TYPE=SOLUTION if USER is not specified:
+
+Element number.
+
+Integration point number.
+
+Value of first internal variable.
+
+Value of second internal variable.
+
+Etc.
+
+Repeat this line if needed. The number of internal variables must be specified
+by using the *DEPVAR card. 
+
+There is no line following the first one for TYPE=SOLUTION,USER.
+
+Following line for TYPE=STRESS if USER is not specified:
+
+Element number.
+
+Integration point number.
+
+Value of first stress component (xx) in the GLOBAL coordinate system x-y-z.
+
+Value of second stress component (yy) in the GLOBAL coordinate system x-y-z.
+
+Value of third stress component (zz) in the GLOBAL coordinate system x-y-z.
+
+Value of fourth stress component (xy) in the GLOBAL coordinate system x-y-z.
+
+Value of fifth stress component (xz) in the GLOBAL coordinate system x-y-z.
+
+Value of sixth stress component (yz) in the GLOBAL coordinate system x-y-z.
+
+Etc.
+
+Repeat this line if needed. The stress components should be given in the form
+of second Piola-Kirchhoff stresses. 
+
+There is no line following the first one for TYPE=STRESS,USER.
+
+Following line for TYPE=TEMPERATURE:
+
+Node number or node set label.
+
+Initial temperature value at the node.
+
+Initial temperature gradient in normal direction (shells) or in
+2-direction (beams).
+
+Initial temperature gradient in 1-direction (beams).
+
+Repeat this line if needed.
+
+Following line for TYPE=VELOCITY or TYPE=FLUID VELOCITY:
+
+Node number or node set label.
+
+Degree of freedom in the GLOBAL coordinate system.
+
+Magnitude of the velocity.
+
+Examples:
+
+*INITIAL CONDITIONS,TYPE=TEMPERATURE
+Nall,273.
+
+assigns the initial temperature T=273. to all nodes in (node) file Nall.
+
+*INITIAL CONDITIONS,TYPE=VELOCITY
+18,2,3.15
+
+assigns the initial velocity 3.15 to degree of freedom 2 of node 18.
+
+Example files: beam20t, beamnlt, beamt3, resstress1, resstress2, resstress3.
+
+     Contents 
+
+
+##### node257.html
+*MATERIAL
+
+     Contents 
+
+*MATERIAL
+
+Keyword type: model definition
+
+This option is used to indicate the start of a material definition. A material data block is defined by the options between a *MATERIAL line and either another *MATERIAL line or a keyword line that does not define material properties. All material options within a data block will be assumed to define the same material. If a property is defined more than once for a material, the last definition is used. There is one required parameter, NAME, defining the name of the material with which it can be referenced in element property options (e.g. *SOLID SECTION). The name can contain up to 80 characters.
+
+Material data requests outside the defined ranges are extrapolated in a constant way and a warning is generated. Be aware that this occasionally occurs due to rounding errors.
+
+First line:
+
+*MATERIAL
+
+Enter the NAME parameter and its value.
+
+Example:
+
+*MATERIAL,NAME=EL
+
+starts a material block with name EL.
+
+Example files: fullseg, beamnldype, beamog.
+
+
+##### node264.html
+*NODE
+
+     Contents 
+
+*NODE
+
+Keyword type: model definition
+
+This option allows nodes and their coordinates to be defined. The parameter NSET is optional and is used to assign the nodes to a node set. If the set already exists, the nodes are ADDED to the set.
+
+First line:
+
+*NODE
+
+Enter the optional parameter, if desired.
+
+Following line:
+
+node number.
+
+Value of first coordinate.
+
+Value of second coordinate.
+
+Value of third coordinate.
+
+Repeat this line if needed.
+
+Example:
+
+*NODE,NSET=Nall
+1,0.,0.,0.
+2,1.,0.,0.
+3,0.,1.,0.
+
+defines three nodes with node number one, two and three and rectangular coordinates (0.,0.,0.), (1.,0.,0.) and (0.,1.,0.) respectively.
+
+Example files: beam8t, beamb, beamdy1.
+
+
+##### node265.html
+*NODE FILE
+
+     Contents 
+
+*NODE FILE
+
+Keyword type: step
+
+This option is used to print selected nodal variables in file jobname.frd for
+subsequent viewing by CalculiX GraphiX. The following variables can be
+selected (the label is square
+brackets [] is the one used in the .frd file; for frequency calculations with
+cyclic symmetry both a real and an imaginary part may be stored, in all other cases only the
+real part is stored):
+
+CP [CP3DF]: Pressure coefficient in 3D compressible fluids.
+
+DEPT [DEPTH]: Fluid depth in channel networks.
+
+HCRI [HCRIT]: Critical depth in channel networks.
+
+MACH [M3DF]: Mach numbers in 3D compressible fluids.
+
+MAXU [MDISP]: Maximum displacements orthogonal to a given vector at all times for
+  *FREQUENCY calculations with cyclic symmetry. The
+  components of the vector are the coordinates of a node stored in a node set
+  with the name RAY. This node and node set must have been defined by the user.
+
+MF [MAFLOW]: Mass flows in networks. The mass flow through a network element
+  is stored in the middle node of the element. In the end nodes the mass flow
+  is not unique, since more than two element can be connected to the node. For
+  end nodes the sum of the mass flow leaving the node is stored. Notice that
+  at nodes where mass flow is leaving the network the value will be wrong if
+  no proper exit element (with node number 0) is attached to that node.
+
+NT [NDTEMP]: Temperatures. This includes both structural temperatures and
+  total fluid temperatures in a network.
+
+PNT [PNDTEMP]: Temperatures: magnitude and phase (only for *STEADY
+  STATE DYNAMICS calculations).
+
+POT [ELPOT]: Electrical potential, only for electromagnetic calculations.
+
+PRF [PFORC]: External forces: magnitude and phase (only for
+*FREQUENCY calculations with cyclic symmetry).
+
+PS [STPRES]: Static pressures in liquid networks.
+
+PSF [PS3DF]: Static pressures in 3D fluids.
+
+PT [TOPRES]: Total pressures in gas networks.
+
+PTF [PT3DF]: Total pressures in 3D fluids.
+
+PU [PDISP]: Displacements: magnitude and phase (only for *STEADY
+  STATE DYNAMICS calculations and
+*FREQUENCY calculations with cyclic symmetry).
+
+RF [FORC(real), FORCI(imaginary)]: External forces (only static forces;
+  dynamic forces, such as those caused by dashpots, are not included)
+
+RFL [RFL]: External concentrated heat sources.
+
+SEN [SEN]: Sensitivities.
+
+TS [STTEMP]: Static temperatures in networks.
+
+TSF [TS3DF]: Static temperatures in 3D fluids.
+
+TT [TOTEMP]: Total temperatures in networks.
+
+TTF [TT3DF]: Total temperatures in 3D fluids.
+
+TURB [TURB3DF]: Turbulence variables in 3D compressible fluids:
+   and 
+.
+
+U [DISP(real), DISPI(imaginary)]: Displacements.
+
+V [VELO]: Velocities in dynamic calculations.
+
+VF [V3DF]: Velocities in 3D fluids.
+
+The selected variables are stored for the complete model.
+
+The external forces (key RF) are the sum of
+the reaction forces, concentrated loads (*CLOAD) and distributed loads
+(*DLOAD) in the node at stake. Only in the absence of concentrated loads in
+the node and distributed loads in any element to which the node belongs, the
+external forces reduce to the reaction forces. Forces induced by multiple
+point constraints are not calculated. Since single point constraints defined
+in transformed coordinates are converted into multiple point constraints in
+the global rectangular system, the force in a node in which a SPC is defined
+in local coordinates are not correctly delivered upon using the RF key in
+combination with the *NODE PRINT keyword card.
+
+For frequency calculations with cyclic symmetry the eigenmodes are generated
+in pairs (different by a phase shift of 90 degrees). Only the first one of
+each pair is stored in the frd file. If U is selected (the displacements) two
+load cases are stored in the frd file: a loadcase labeled DISP
+containing the real part of the displacements and a loadcase labeled DISPI
+containing the imaginary part of the displacements. For all other variables only
+the real part is stored.
+
+The first occurrence of an *NODE FILE keyword card within a step wipes
+out all previous nodal variable selections for file output. If no
+*NODE FILE card is used within a step the selections of the previous
+step apply. If there is no previous step, no nodal variables will be stored.
+
+Notice that only values in nodes belonging to elements are
+stored. Values in nodes not belonging to any element (e.g. the
+rotational node in a *RIGID BODY option) can only be
+obtained using *NODE PRINT.
+
+There are seven optional parameters: FREQUENCY, FREQUENCYF, GLOBAL, OUTPUT, TIME
+POINTS, NSET, LAST ITERATIONS and CONTACT ELEMENTS. 
+The parameters FREQUENCY and TIME POINTS are mutually exclusive. 
+
+FREQUENCY applies to
+nonlinear calculations where a step can consist of several
+increments. Default is FREQUENCY=1, which indicates that the results
+of all increments will be stored. FREQUENCY=N with N an integer
+indicates that the results of every Nth increment will be stored. The
+final results of a step are always stored. If you only want the final
+results, choose N very big. 
+The value of N applies to 
+*OUTPUT,*ELEMENT OUTPUT, 
+*EL FILE, *ELPRINT, 
+*NODE OUTPUT,
+*NODE FILE, *NODE PRINT,
+*FACE PRINT,*CONTACT OUTPUT,
+*CONTACT FILE and *CONTACT PRINT. 
+If the FREQUENCY parameter is used
+for more than one of these keywords with conflicting values of N, the
+last value applies to all. A frequency parameter stays active across several steps
+until it is overwritten by another FREQUENCY value or the TIME POINTS parameter.
+
+The 3D fluid analogue of FREQUENCY is FREQUENCYF. In coupled calculations
+FREQUENCY applies to the thermomechanical output, FREQUENCYF to the 3D fluid output.
+
+With the parameter GLOBAL you tell the program whether you would like the
+results in the global rectangular coordinate system or in the local nodal
+system. If an *TRANSFORM card is applied to the node at stake, this card defines
+the local system. If no *TRANSFORM card is applied to the
+element, the local system coincides with the global rectangular
+system. Default value for the GLOBAL parameter is GLOBAL=YES,
+which means that the results are stored in the global system. If you prefer the
+results in the local system, specify GLOBAL=NO.
+
+The parameter OUTPUT can take the value 2D or 3D. This has only
+effect for 1d and 2d elements such as beams, shells, plane stress, plane
+strain and axisymmetric elements AND provided it is used in the first step. If
+OUTPUT=3D, the 1d and 2d elements are stored in their expanded three-dimensional
+form. In particular, the user has the advantage to see his/her 1d/2d elements
+with their real thickness dimensions. However, the node numbers are new and do
+not relate to the node numbers in the input deck. Once selected, this
+parameter is active in the complete calculation. If OUTPUT=2D the fields in the expanded elements are averaged to obtain
+the values in the nodes of the original 1d and 2d elements. In particular,
+averaging removes the bending stresses in beams and
+shells. Therefore, default for beams
+and shells is OUTPUT=3D, for plane stress, plane strain and axisymmetric
+elements it is OUTPUT=2D. For axisymmetric structures and OUTPUT=2D the mass flow (MF) and
+the external force (RF) are stored for 360, else it is stored for the
+displayed 3D segment, i.e. 2.  If OUTPUT=3D is selected, the parameter NSET is deactivated.
+
+With the parameter TIME POINTS a time point sequence can be referenced,
+defined by a 
+*TIME POINTS keyword. In that case, output will be
+provided for all time points of the sequence within the step and additionally at the end of
+the step. No other output will be stored and the FREQUENCY parameter is not
+taken into account. Within a step only one time point sequence can be active. If more than
+one is specified, the last one defined on any of the keyword cards
+*NODE FILE, *EL FILE, *NODE
+  PRINT or *EL PRINT will be active. The TIME
+POINTS option should not be used together with the DIRECT option on the
+procedure card.  The TIME POINTS parameters stays active across several steps
+until it is replaced by another TIME POINTS value or the FREQUENCY parameter.
+
+The specification of a node set with the parameter NSET limits the output to
+the nodes contained in the set. For cyclic symmetric structures the usage of the
+parameter NGRAPH on the *CYCLIC SYMMETRY MODEL
+card leads to output of the results not only for the node set specified by the
+user (which naturally belongs to the base sector) but also for all
+corresponding nodes of the sectors generated by the NGRAPH parameter. Notice
+that for cyclic symmetric structures the use of NSET is mandatory.
+
+The parameter LAST ITERATIONS leads to the storage of the
+displacements in all iterations
+of the last increment in a file with name ResultsForLastIterations.frd (can be opened with CalculiX GraphiX). This is
+useful for debugging purposes in case of divergence. No such file is created if
+this parameter is absent. 
+
+Finally, the parameter CONTACT ELEMENTS  stores the contact elements which have
+been generated in each iteration in a file with the name
+contactelements.inp. When
+opening the frd file with CalculiX GraphiX these files can be read with the
+command ``read contactelements.inp'' and visualized by
+plotting the elements in the sets
+contactelements_st_in_at_it, where 
+is the step number,  the increment number,  the attempt number
+and  the iteration number.
+
+First line:
+
+*NODE FILE
+
+Enter any needed parameters and their values.
+
+Second line:
+
+Identifying keys for the variables to be printed, separated by commas.
+
+Example:
+
+*NODE FILE,TIME POINTS=T1
+RF,NT
+
+requests the storage of reaction forces and temperatures in the .frd
+file for all time
+points defined by the T1 time points sequence.
+
+Example files: beampt, beampo1.
+
+     Contents 
+
+
+##### node267.html
+*NODE PRINT
+
+     Contents 
+
+*NODE PRINT
+
+Keyword type: step
+
+This option is used to print selected nodal variables in file
+jobname.dat. The following variables can be
+selected:
+
+Displacements (key=U)
+
+Structural temperatures and total temperatures in networks (key=NT or TS; both are equivalent)
+
+Static temperatures in 3D fluids (key=TSF)
+
+Total temperatures in 3D fluids (key=TTF)
+
+Pressures in networks (key=PN). These are the total pressures for gases,
+  static pressures for liquids and liquid depth for channels. The fluid
+  section types dictate the kind of network.
+
+Static pressures in 3D fluids (key=PSF)
+
+Total pressures in 3D fluids (key=PTF)
+
+Mach numbers in compressible 3D fluids (key=MACH)
+
+Pressure coefficients in compressible 3D fluids (key=CP)
+
+Velocities in 3D fluids (key=VF)
+
+Mass flows in networks (key=MF)
+
+External forces (key=RF) (only static forces;
+  dynamic forces, such as those caused by dashpots, are not included)
+
+External concentrated heat sources (key=RFL)
+
+The external forces are the sum of
+the reaction forces, concentrated loads (*CLOAD) and distributed loads
+(*DLOAD) in the node at stake. Only in the absence of concentrated loads in
+the node and distributed loads in any element to which the node belongs, the
+external forces reduce to the reaction forces. Forces induced by multiple
+point constraints are not calculated. Since single point constraints defined
+in transformed coordinates are converted into multiple point constraints in
+the global rectangular system, the force in a node in which a SPC is defined
+in local coordinates are not correctly delivered upon using the RF key in
+combination with the *NODE PRINT keyword card.
+
+There are six parameters,
+FREQUENCY, FREQUENCYF, NSET, TOTALS, GLOBAL and TIME POINTS. The parameter NSET is
+required, defining the set of nodes for which the displacements should be
+printed. If this card is omitted, no values are printed. Several *NODE PRINT
+cards can be used within one and the same step.
+
+The parameters FREQUENCY and TIME POINTS are mutually exclusive. 
+
+The parameter FREQUENCY is optional, and applies to
+nonlinear calculations where a step can consist of several
+increments. Default is FREQUENCY=1, which indicates that the results
+of all increments will be stored. FREQUENCY=N with N an integer
+indicates that the results of every Nth increment will be stored. The
+final results of a step are always stored. If you only want the final
+results, choose N very big. 
+The value of N applies to 
+*OUTPUT,*ELEMENT OUTPUT, 
+*EL FILE, *ELPRINT, 
+*NODE OUTPUT,
+*NODE FILE, *NODE PRINT,
+*FACE PRINT,*CONTACT OUTPUT,
+*CONTACT FILE and *CONTACT PRINT. 
+If the FREQUENCY parameter is used
+for more than one of these keywords with conflicting values of N, the
+last value applies to all. A frequency parameter stays active across several steps
+until it is overwritten by another FREQUENCY value or the TIME POINTS parameter.
+
+The 3D fluid analogue of FREQUENCY is FREQUENCYF. In coupled calculations
+FREQUENCY applies to the thermomechanical output, FREQUENCYF to the 3D fluid output.
+
+The parameter TOTALS only applies to external forces. If
+TOTALS=YES the sum of the external forces for the whole node set is
+printed in addition to their value for each node in the set
+separately. If TOTALS=ONLY is selected the sum is printed but the
+individual nodal contributions are not. If TOTALS=NO (default) the
+individual contributions are printed, but their sum is not. Notice that the
+sum is always written in the global rectangular system, irrespective of the
+value of the GLOBAL parameter.
+
+With the optional parameter GLOBAL you tell the program whether you would like the
+results in the global rectangular coordinate system or in the local nodal
+system. If an *TRANSFORM card is applied to the node at stake, this card defines
+the local system. If no *TRANSFORM card is applied to the
+element, the local system coincides with the global rectangular
+system. Default value for the GLOBAL parameter is GLOBAL=NO,
+which means that the results are stored in the local system. If you prefer the
+results in the global system, specify GLOBAL=YES.
+
+With the parameter TIME POINTS a time point sequence can be referenced,
+defined by a 
+*TIME POINTS keyword. In that case, output will be
+provided for all time points of the sequence within the step and additionally at the end of
+the step. No other output will be stored and the FREQUENCY parameter is not
+taken into account. Within a step only one time point sequence can be active. If more than
+one is specified, the last one defined on any of the keyword cards
+*NODE FILE, *EL FILE, *NODE
+  PRINT, *EL PRINT or *FACE
+  PRINT will be active. The TIME
+POINTS option should not be used together with the DIRECT option on the
+procedure card. The TIME POINTS parameters stays active across several steps
+until it is replaced by another TIME POINTS value or the FREQUENCY parameter.
+
+The first occurrence of an *NODE PRINT keyword card within a step wipes
+out all previous nodal variable selections for print output. If no
+*NODE PRINT card is used within a step the selections of the previous
+step apply, if any.
+
+Notice that some of the keys apply to specific domains. For instance, PS and V
+can only be used for 3D fluids, PT and MF only for networks. Furthermore, PT
+only makes sense for the vertex nodes of the network elements, whereas MF only
+applies to the middle nodes of network elements. It is the responsibility of
+the user to make sure that the sets (s)he specifies contain the right
+nodes. For nodes not matching the key the printed values are meaningless.
+ If the model contains axisymmetric elements the mass flow applies to a
+segment of . So for the total flow this value has to be multiplied by
+180. 
+
+First line:
+
+*NODE PRINT
+
+Enter the parameter NSET and its value.
+
+Second line:
+
+Identifying keys for the variables to be printed, separated by commas.
+
+Example:
+
+*NODE PRINT,NSET=N1
+RF
+
+requests the storage of the reaction forces in the nodes belonging to (node) set N1 in the .dat file.
+
+Example files: beampkin, beamrb.
+
+     Contents 
+
+
+##### node269.html
+*NSET
+
+     Contents 
+
+*NSET
+
+Keyword type: model definition
+
+This option is used to assign nodes to a node set. The parameter NSET
+containing the name of the set is required (maximum 80 characters), whereas the parameter
+GENERATE (without value) is optional. If present, nodal ranges can be
+expressed by their initial value, their final value, and an increment.
+If a set with the same name already exists, it is reopened and complemented. The
+name of a set is case insensitive. Internally,
+it is modified into upper case and a 'N' is appended to denote it as
+node set. Nodes are internally stored in the order they are entered, no
+sorting is performed.
+
+First line:
+
+*NSET
+
+Enter any needed parameters and their values.
+
+Following line if the GENERATE parameter is omitted:
+
+List of nodes and/or sets of nodes previously defined to be assigned to this node set (maximum 16 entries per line).
+
+Repeat this line if needed.
+
+Following line if the GENERATE parameter is included:
+
+First node in set.
+
+Last node in set.
+
+Increment in nodal numbers between nodes in the set. Default is 1.
+
+Repeat this line if needed.
+
+Example:
+
+*NSET,NSET=N1
+1,8,831,208
+*NSET,NSET=N2
+100,N1
+
+assigns the nodes with number 1, 8, 831 and 208 to (node) set N1 and
+the nodes with numbers 1, 8, 831, 208 (= set N1) and 100 to set N2.
+
+Example files: segmentm, shell2.
+
+     Contents 
+
+
+##### node274.html
+*PLASTIC
+
+     Contents 
+
+*PLASTIC
+
+Keyword type: model definition, material
+
+This option is used to define the plastic properties of an
+incrementally plastic material. There is one optional parameter
+HARDENING. Default is HARDENING=ISOTROPIC, other values are
+HARDENING=KINEMATIC for kinematic hardening, HARDENING=COMBINED for
+combined isotropic and kinematic hardening and HARDENING=USER for user
+defined hardening curves. All constants may be temperature
+dependent. The card should be preceded by a
+*ELASTIC card within the same material definition,
+defining the isotropic elastic properties of the material. User
+defined hardening curves should be defined in the user subroutine
+uhardening.f
+
+If the elastic data is isotropic, the large strain viscoplastic theory
+treated in [70] and [71] is applied. If the elastic
+data is orthotropic, the infinitesimal strain model discussed in
+Section 6.8.11 is used. Accordingly, for an elastically
+orthotropic material 
+the hardening can be at most linear. Furthermore, if the temperature
+data points for the hardening curves do not correspond to the *ELASTIC
+temperature data points, they are interpolated at the latter
+points. Accordingly, for an elastically orthotropic material, it is
+advisable to define the hardening curves at the same temperatures as
+the elastic data.
+
+For the selection of plastic output variables the reader is referred to
+Section 6.8.6.
+
+First line:
+
+*PLASTIC
+
+Enter the HARDENING parameter and its value, if needed
+
+Following sets of lines define the isotropic hardening curve for HARDENING=ISOTROPIC and the kinematic hardening curve for HARDENING=KINEMATIC or HARDENING=COMBINED:
+First line in the first set:
+
+Von Mises stress.
+
+Equivalent plastic strain.
+
+Temperature.
+
+Use as many lines in the first set as needed to define the complete hardening curve for this temperature.
+
+Use as many sets as needed to define complete temperature dependence.
+
+For the definition of the isotropic hardening curve for HARDENING=COMBINED the keyword *CYCLIC HARDENING is used. 
+
+Example:
+
+*PLASTIC
+800.,0.,273.
+900.,0.05,273.
+1000.,0.15,273.
+700.,0.,873.
+750.,0.04,873.
+800.,0.13,873.
+
+defines two stress-strain curves: one for temperature T=273. and one for T=873. The curve at T=273 connects the points (800.,0.), (900.,0.05) and (1000.,0.15), the curve at T=873 connects (700.,0.), (750.,0.04) and (800.,0.13). Notice that the first point on the curves represents first yielding and must give the Von Mises stress for a zero equivalent plastic strain.
+
+Example files: beampd, beampiso, beampkin, beampt.
+
+     Contents 
+
+
+##### node283.html
+*SOLID SECTION
+
+     Contents 
+
+*SOLID SECTION
+
+Keyword type: model definition
+
+This option is used to assign material properties to 3D, plane
+stress, plane strain, axisymmetric  and truss element sets. The parameters
+ELSET and MATERIAL are required, the parameter ORIENTATION is
+optional. The parameter ELSET defines the element set to which the
+material specified by the parameter MATERIAL applies. The parameter
+ORIENTATION allows to assign local axes to the element set. If
+activated, the material properties are applied to the local axis. This
+is only relevant for non isotropic material behavior. For plane stress
+and plane strain elements the thickness can be specified on the second
+line. Default is 1.
+
+First line:
+
+*SOLID SECTION
+
+Enter any needed parameters.
+
+Second line (only relevant for plane stress, plane strain and
+truss elements; can be omitted for axisymmetric and 3D elements):
+
+thickness for plane stress and plane strain elements, cross-sectional
+  area for truss elements.
+
+Example:
+
+*SOLID SECTION,MATERIAL=EL,ELSET=Eall,ORIENTATION=OR1
+
+assigns material EL with orientation OR1 to all elements in (element) set Eall.
+
+Example files: beampo2, planestress.
+
+     Contents 
+
+
+##### node285.html
+*SPECIFIC HEAT
+
+     Contents 
+
+*SPECIFIC HEAT
+
+Keyword type: model definition, material
+
+With this option the specific heat of a solid material can be defined. The
+specific heat is required for a transient heat transfer analysis
+(*HEAT TRANSFER or *COUPLED TEMPERATURE-DISPLACEMENT). The specific heat can
+be temperature dependent.
+
+This option should not be used to define the specific heat of a fluid (gas or
+liquid) in an aerodynamic or fluid dynamic network. For the latter purpose the
+keyword *FLUID CONSTANTS is available.
+
+First line:
+
+*SPECIFIC HEAT
+
+Following line:
+
+Specific heat.
+
+Temperature.
+
+Repeat this line if needed to define complete temperature dependence.
+
+Example:
+
+*SPECIFIC HEAT
+446.E6
+
+defines a specific heat with value 
+ for all temperatures.
+
+Example files: beamth, beamhtcr.
+
+
+##### node287.html
+*STATIC
+
+     Contents 
+
+*STATIC
+
+Keyword type: step
+
+This procedure is used to perform a static analysis. The load consists of the
+sum of the load of the last *STATIC step and the load specified in the present
+step with replacement of redefined loads. This card is also correct for steady
+state incompressible flow calculations without heat transfer.
+
+There are five optional parameters: SOLVER, DIRECT, EXPLICIT, TIME RESET and
+TOTAL TIME AT START. SOLVER determines the
+package used to solve the ensuing system of equations. The following solvers
+can be selected:
+
+the SGI solver
+
+PARDISO
+
+SPOOLES [3,4]. 
+
+TAUCS 
+
+the iterative solver by Rank and Ruecker [62], which is based on
+  the algorithms by Schwarz [66]. 
+
+Default is the first solver which has been installed of the following list:
+SGI, PARDISO, SPOOLES and TAUCS. If none is installed, the default is the iterative solver, which comes with the CalculiX
+package.
+
+The SGI solver is the fastest, but is is proprietary: if you own SGI
+hardware you might have gotten the scientific software package as well, which
+contains the SGI sparse system solver. SPOOLES is also very fast, but has no
+out-of-core capability: the size of systems you can solve is limited by your
+RAM memory. With 2GB of RAM you can solve up to 250,000 equations. TAUCS is
+also good, but my experience is limited to the  decomposition, which
+only applies to positive definite systems. It has an out-of-core capability
+and also offers a  decomposition, however, I was not able to run either of
+them so far. Next comes the iterative solver. If SOLVER=ITERATIVE SCALING is
+selected, the pre-conditioning is limited to a scaling of the diagonal terms,
+SOLVER=ITERATIVE CHOLESKY triggers Incomplete Cholesky
+pre-conditioning. Cholesky pre-conditioning leads to a better convergence and
+maybe to shorter execution times, however, it requires additional storage
+roughly corresponding to the non-zeros in the matrix. If you are short of
+memory, diagonal scaling might be your last resort. The iterative methods
+perform well for truly three-dimensional structures. For instance,
+calculations for a hemisphere were about nine times faster with the ITERATIVE
+SCALING solver, and three times faster with the ITERATIVE CHOLESKY solver than
+with SPOOLES. For two-dimensional structures such as plates or shells, the
+performance might break down drastically and convergence often requires the
+use of Cholesky pre-conditioning. SPOOLES (and any of the other direct solvers)
+performs well in most situations with emphasis on slender structures but
+requires much more storage than the iterative solver. PARDISO is the Intel proprietary solver.
+
+The parameter DIRECT is relevant for nonlinear calculations only, and
+indicates that automatic incrementation should be switched off.
+
+The parameter EXPLICIT is only important for fluid computations. If present,
+the fluid computation is explicit, else it is semi-implicit. Static structural
+computations are always implicit.
+
+The parameter TIME RESET can be used to force the total time at the
+end of the present step to coincide with the total time at the end of the
+previous step. If there is no previous step the targeted total time is
+zero. If this parameter is absent the total time at the end of the present step is the
+total time at the end of the previous step plus the time period of the present
+step (2nd parameter underneath the *STATIC keyword). Consequently, if the time
+at the end of the previous step is 10. and the present time period is 1., the
+total time at the end of the present step is 11. If the TIME RESET parameter
+is used, the total time at the beginning of the present step is 9. and at the
+end of the present step it will be 10. This is sometimes useful if
+thermomechanical calculations are split into transient heat transfer steps
+followed by quasi-static static steps (this can be faster than using the
+*COUPLED TEMPERATURE-DISPLACEMENT option, which forces the same amount of
+iterations for the thermal as for the mechanical calculations and than using
+the *UNCOUPLED TEMPERATURE-DISPLACEMENT option, which forces the same amount
+of increments for the thermal as for the mechanical calculations). In CalculiX the static step needs a
+finite time period, however, the user frequently does not want the quasi-static
+step to change the time count.
+
+Finally, the parameter TOTAL TIME AT START can be used to set the total time
+at the start of the step to a specific value.
+
+In a static step, loads are by default applied in a linear way. Other loading
+patterns can be defined by an *AMPLITUDE card.
+
+If nonlinearities are present in the model (geometric nonlinearity or material
+nonlinearity), the solution is obtained through iteration. Since the step may
+be too large to obtain convergence, a subdivision of the step in increments is
+usually necessary. The user can define the length of the initial
+increment. This size is kept constant if the parameter DIRECT is selected,
+else it is varied by CalculiX according to the convergence properties of the
+solution. In a purely linear calculation the step size is always 1., no
+iterations are performed and, consequently, no second line underneath *STATIC
+is needed. 
+
+Notice that any creep behavior (e.g. by using the keyword
+*CREEP) is switched off in a *STATIC step. To include creep
+use the *VISCO keyword. The syntax for both keywords is the same.
+
+First line:
+
+*STATIC
+
+Enter any needed parameters and their values.
+
+Second line (only relevant for nonlinear analyses; for linear analyses, the
+step length is always 1)
+
+Initial time increment. This value will be modified due to automatic incrementation, unless the parameter DIRECT was specified (default 1.).
+
+Time period of the step (default 1.).
+
+Minimum time increment allowed. Only active if DIRECT is not specified. Default is the initial time increment or 1.e-5 times the time period of the step, whichever is smaller.
+
+Maximum time increment allowed. Only active if DIRECT is not specified. Default is 1.e+30.
+
+Initial time increment for CFD applications (default 1.e-2)
+
+Example:
+
+*STATIC,DIRECT
+.1,1.
+
+defines a static step and selects the SPOOLES solver as linear equation solver in the step (default). If the step is a linear one, the other parameters are of no importance. If the step is nonlinear, the second line indicates that the initial time increment is .1 and the total step time is 1. Furthermore, the parameter DIRECT leads to a fixed time increment. Thus, if successful, the calculation consists of 10 increments of length 0.1.
+
+Example files: beampic, beampis.
+
+     Contents 
+
+
+##### node289.html
+*STEP
+
+     Contents 
+
+*STEP
+
+Keyword type: step
+
+This card describes the start of a new STEP. PERTURBATION, NLGEOM, INC, INCF,
+TURBULENCE MODEL and SHOCK SMOOTHING are the optional parameters. 
+
+The parameter PERTURBATION is allowed for *FREQUENCY and *BUCKLE steps only. If it is specified, the last *STATIC step is taken as reference state and used to calculate the stiffness matrix. This means the inclusion of previous deformations (large deformation stiffness) and the inclusion of previous loads as preloads (stress stiffness), taking the temperatures into account to determine the material properties. The loads active (mechanical and thermal) are those specified in the perturbation step. The displacements and stresses are those corresponding to the  eigenmodes. At the end of the step the perturbation load is reset to zero.
+
+The loading active in a non-perturbative step is the accumulation of the loading in all previous steps since but not including the last perturbation step (or, if none has occurred, since the start of the calculation), unless OP=NEW has been specified since.
+
+If NLGEOM is specified, the calculation takes geometrically nonlinear effects
+into account. To this end a nonlinear strain tensor is used (Lagrangian strain
+for hyperelastic materials, Eulerian strain for deformation plasticity and the
+deviatoric elastic left Cauchy-Green tensor for incremental plasticity), the
+step is divided into increments and a Newton iteration is performed within
+each increment. Although the internally used stresses are the Piola stresses
+of the second kind, they are transformed into Cauchy (true) stresses before
+being printed. In the present version of the program geometrically nonlinear
+calculations only apply to static calculations, and consequently the *STATIC
+or *DYNAMIC keyword card should be used within the step. The latter card also
+allows for the specification of the step size and increment size. The maximum
+number of increments in the step (for automatic incrementation) can be
+specified by using the parameter INC (default is 100) for thermomechanical
+calculations and INCF (default is 10000) for 3D fluid calculations. In coupled
+fluid-structure calculations INC applies to the thermomechanical part of the
+computations and INCF to the 3D fluid part. Once the NLGEOM
+parameter has been selected, it remains active in all subsequent static
+calculations. Some analyses involving nonlinear materials (*HYPERELASTIC,
+*HYPERFOAM, *DEFORMATION PLASTICITY, *PLASTIC, *CREEP) automatically trigger the
+NLGEOM option. Thus, for these types of analysis nonlinear geometric effects
+are always taken into account. This also applies to analyses with 1d or 2d
+elements in the presence of knots and calculations with *GAP, *MPC or *RIGID
+BODY definitions.
+
+For 3D fluid calculations the parameter TURBULENCE MODEL defines the
+turbulence model to be used. The user can choose among NONE (laminar
+calculations; this is default), K-EPSILON, K-OMEGA and SST [48]. In
+addition, if the flow is compressible, a shock smoothing coefficient can be
+chosen using the parameter SHOCK SMOOTHING. Its value should be in the range
+between 0.0 and 2.0. The larger this coefficient, the more the results are
+smoothed and the more likely the predictive quality of your calculation will
+be poor. Therefore, one should start a calculation with a zero shock smoothing
+coefficient (default). If this calculation converges and the results look
+fine, no further smoothing should be introduced. If the calculation does not
+converge are the solution looks totally wrong, the shock smooting coefficient
+should be increased until convergence with good quality results takes
+place. This coefficient does not have any impact on incompressible flow.
+
+First and only line:
+
+*STEP
+
+Enter any needed parameters and their values
+
+Example:
+
+*STEP,INC=1000,INCF=20000,TURBULENCE MODEL=SST
+
+starts a step and increases the maximum number of thermomechanical increments
+to complete the step to 1000. The maximum number of 3D fluid increments is set
+to 20000 and for the turbulence model the SST model was chosen.
+
+Example files: beamnlp.
+
+     Contents 
+
+
+##### node293.html
+*SURFACE
+
+     Contents 
+
+*SURFACE
+
+Keyword type: model definition
+
+This option is used to define surfaces made up of nodes or surfaces made up of
+element faces. A mixture of nodes and element faces belonging to one and the
+same surface is not possible. There are
+two parameters: NAME and TYPE. The parameter NAME
+containing the name of the surface is required. The TYPE parameter takes the
+value NODE for nodal surfaces and ELEMENT for element face surfaces. Default
+is TYPE=ELEMENT. 
+
+At present, surfaces are used to establish cyclic symmetry conditions and to
+define contact (including tied contact). The master and slave surfaces in cyclic symmetry conditions
+must be nodal surfaces. For contact, the slave surface can be a nodal or
+element face
+surface, while the master surface has to be a element face surface.
+
+Element faces are identified by the surface label Sx where x is the number of the face. The numbering depends on the element type.
+
+For hexahedral elements the faces are numbered as follows (numbers are
+node numbers):
+
+Face 1: 1-2-3-4
+
+Face 2: 5-8-7-6
+
+Face 3: 1-5-6-2
+
+Face 4: 2-6-7-3
+
+Face 5: 3-7-8-4
+
+Face 6: 4-8-5-1
+
+for tetrahedral elements:
+
+Face 1: 1-2-3
+
+Face 2: 1-4-2
+
+Face 3: 2-4-3
+
+Face 4: 3-4-1
+
+and for wedge elements:
+
+Face 1: 1-2-3
+
+Face 2: 4-5-6
+
+Face 3: 1-2-5-4
+
+Face 4: 2-3-6-5
+
+Face 5: 3-1-4-6
+
+for quadrilateral plane stress, plane strain and axisymmetric elements:
+
+Face 1: 1-2
+
+Face 2: 2-3
+
+Face 3: 3-4
+
+Face 4: 4-1
+
+Face N: in negative normal direction (only for plane stress)
+
+Face P: in positive normal direction (only for plane stress) 
+
+for triangular plane stress, plane strain and axisymmetric elements:
+
+Face 1: 1-2
+
+Face 2: 2-3
+
+Face 3: 3-1
+
+Face N: in negative normal direction (only for plane stress)
+
+Face P: in positive normal direction (only for plane stress) 
+
+for quadrilateral shell elements:
+
+Face NEG or 1: in negative normal direction
+
+Face POS or 2: in positive normal direction
+
+Face 3: 1-2
+
+Face 4: 2-3
+
+Face 5: 3-4
+
+Face 6: 4-1
+
+for triangular shell elements:
+
+Face NEG or 1: in negative normal direction
+
+Face POS or 2: in positive normal direction
+
+Face 3: 1-2
+
+Face 4: 2-3
+
+Face 5: 3-1
+
+Notice that the labels 1 and 2 correspond to
+the brick face labels of the 3D expansion of the shell (Figure 61).
+
+for beam elements:
+
+Face 1: in negative 1-direction
+
+Face 2: in positive 1-direction
+
+Face 3: in positive 2-direction
+
+Face 5: in negative 2-direction
+
+The beam face numbers correspond to the brick face labels of the 3D
+expansion of the beam (Figure 66).
+
+First line:
+
+*SURFACE
+
+Enter the parameter NAME and its value, and, if necessary, the TYPE parameter.
+
+Following line for nodal surfaces:
+
+Node or node set to be assigned to this surface (maximum 1 entry per line).
+
+Repeat this line if needed.
+
+Following line for element face surfaces:
+
+Element or element set (maximum 1 entry per line).
+
+Surface label (maximum 1 entry per line).
+
+Repeat this line if needed.
+
+Example:
+
+*SURFACE,NAME=left,TYPE=NODE
+part,
+1,
+8
+
+assigns the nodes with number 1, and 8 and the nodes belonging to node set part to a surface with name left.
+
+Example:
+
+*SURFACE,NAME=new
+38,S6
+
+assigns the face 6 of element 38 to a surface with name new.
+
+Example files: segment, fullseg.
+
+     Contents 
+
+
+##### node297.html
+*TIE
+
+     Contents 
+
+*TIE
+
+Keyword type: model definition
+
+This option is used to tie two surfaces. It can only be used with 3-dimensional
+elements (no plane stress, plane strain, axisymmetric, beam or shell
+elements).Optional parameters are  
+POSITION TOLERANCE, NAME, CYCLIC SYMMETRY,
+MULTISTAGE, FLUID PERIODIC and FLUID CYCLIC. The last four parameters are
+mutually exclusive. CYCLIC SYMMETRY and MULTISTAGE can only be used for
+structures, FLUID PERIODIC and FLUID CYCLIC can only be used for 3D-fluid
+calculations. The dependent surface is called the slave surface,
+the independent surface is the master surface. The user can freely
+decide which surface is taken as slave and which as master. The
+surfaces are defined using *SURFACE. Nodes belonging to the dependent surface cannot be used as
+dependent nodes in other SPC's or MPC's. Only nodes on an axis of
+cyclic symmetry can belong to both the slave as well as to the master
+surface. 
+
+Default (i.e. in the absense of the CYCLIC SYMMETRY, the MULTISTAGE, the FLUID
+PERIODIC and FLUID CYCLIC
+parameter) is a tie of two adjacent surfaces in a structural calculation. This is also called tied
+contact. In that case MPC's are generated connecting the slave nodes with the
+master faces, provided the distance between the nodes and the adjacent face does not
+exceed the POSITION TOLERANCE. If no tolerance is specified, or the tolerance is smaller than , a default tolerance is calculated equal to
+ of the typical element size. For tied contact the slave surface can
+be a nodal or element face surface, whereas the master surface has to consist
+of element faces. Nodes which are not connected are stored in file
+WarnNodeMissMasterIntersect.nam and can be read into CalculiX GraphiX by using
+the command ``read WarnNodeMissMasterIntersect.nam inp''. In order to create
+the MPC's connecting the slave and master side, the latter is
+triangulated. The triangulation is stored in file TriMasterContactTie.frd and
+can be visualized using CalculiX GraphiX. 
+
+The parameter CYCLIC SYMMETRY is used to tie two surfaces bounding one and the
+same datum sector in circumferential direction. Both the slave and the master
+surface can be node or face based. For face based surfaces the nodes belonging
+to the face are identied at the start of the algorithm which generates the
+cyclic multiple point constraints.
+For each slave node, a master node is determined which
+matches the slave node within a tolerance specified by the parameter
+POSITION TOLERANCE after rotation about the cyclic symmetry axis
+. Subsequently, a cyclic symmetry constraint is generated. If no tolerance is specified, or the tolerance is smaller than , a default tolerance is calculated equal to
+ of the mean of the distance of the master nodes to their closest
+neighbor. If no master node is found within the tolerance, the face on the
+master surface is identified to which the rotated slave node belongs, and a
+more elaborate multiple point constraint is generated. If none
+is found, the closest face is taken. If this face does not lie within 
+of its length from the slave node, an error is issued and the program stops.
+
+The parameter MULTISTAGE is used to tie two coincident nodal surfaces (no
+face based surfaces allowed) each of which
+belongs to a different datum sector. In that way two axially neighboring datum
+sectors can be tied. In this case, the order in which the user specifies the
+surfaces is not relevant: the surface belonging to the smallest datum sector
+is taken as master surface. The larger datum sector should not extend the
+smaller datum sector by more than once the smaller datum sector, no matter in
+what circumferential direction (clockwise or counterclockwise). This option
+should not be used in the presence of network elements.
+
+The parameter FLUID PERIODIC is used to define periodic conditions in 3D-fluid
+calculations on surfaces
+which are translated w.r.t. each other. The surfaces must be face-based. For cyclic conditions in 3D-fluid calculations the parameter FLUID CYCLIC is
+used. Here too, the surfaces must be face-based. Both parameters require the
+*CYCLIC SYMMETRY MODEL card to be effective.
+
+The parameter NAME is needed if more than one *TIE constraint is defined. It
+allows the user to distinguish the tie constraints when referring to them in
+other keyword cards 
+(e.g. *CYCLIC SYMMETRY MODEL).
+
+Notice that *TIE can only be used to tie ONE slave surface with ONE master
+surface. It is not allowed to enter more than one line underneath the *TIE
+card. Furthermore, *TIE cards must not use a name which has already been used
+for another *TIE. 
+
+First line:
+
+*TIE
+
+enter any parameters, if needed.
+
+Following line:
+
+Name of the slave surface.
+
+Name of the master surface.
+
+Example:
+
+*TIE,POSITION TOLERANCE=0.01
+left,right
+
+defines a datum sector with slave surface left and master surface
+right, and defines a position tolerance of 0.01 length units.
+
+Example files: segment, fullseg, couette1per, couettecyl4.
+
+     Contents 
+
+
+##### node30.html
+Four-node tetrahedral element (C3D4 and F3D4)
+
+     Contents 
+
+Four-node tetrahedral element (C3D4 and F3D4)
+
+The C3D4 is a general purpose tetrahedral element (1 integration point). The shape functions can be found in [80]. The node numbering follows the convention of Figure 54.
+
+Figure 54:
+4-node tetrahedral element
+
+This element is included for completeness, however, it is not suited
+for structural calculations unless a lot of them are used (the element
+is too stiff). Please use
+the 10-node tetrahedral element instead.
+
+The F3D4 element is the corresponding fluid element.
+
+
+##### node31.html
+Ten-node tetrahedral element (C3D10)
+
+     Contents 
+
+Ten-node tetrahedral element (C3D10)
+
+The C3D10 element is a general purpose tetrahedral element (4 integration points). The shape functions can be found in [80]. The node numbering follows the convention of Figure 55.
+
+Figure 55:
+10-node tetrahedral element
+
+The element behaves very well and is a good general purpose element,
+although the C3D20R element yields still better results for the same
+number of degrees of freedom. The C3D10 element is especially
+attractive because of the existence of fully automatic tetrahedral
+meshers. 
+
+
