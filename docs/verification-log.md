@@ -47,3 +47,16 @@ Run all: `python3 -m pytest` from the repo root.
   transcription errors: EDL 5 lists HBeAg with serum/plasma (EDL 4: capillary/venous whole blood) and
   renamed "Sickle cell testing" to "Haemoglobin A, S and C detection". Notes were added to the data, and
   the test now accepts a mismatch only when the note declares it and names the EDL 5 value.
+
+## Phase 2b: cost per test (`tests/test_test_costs.py`)
+| ID | Test | What it proves | Independent check | Pass criterion | Result |
+|---|---|---|---|---|---|
+| T-008 | `test_every_number_is_in_its_quote` (17 rows) | Every stored price matches the source wording | Verbatim quote extracted by script from the source text | each low/high/point value appears in the quote | ✅ |
+| T-009 | `test_ranges_are_ordered` | low ≤ point ≤ high | — | ordered | ✅ |
+| T-010 | `test_missing_price_is_never_zero` | An unsourced price (BP device, C-12) can't silently count as $0 | — | `ValueError` | ✅ |
+| T-011 | `test_d008_set_has_a_cost_row` | Every D-008 test has a price row | D-008 list | 7 EDL ids priced | ✅ |
+| T-012 | `test_panel_totals_match_hand_sum` | Panel calculator adds correctly | Hand sum written in the test | 1e-9 | ✅ 16.733–22.988 USD |
+
+### Lessons
+- 2026-11-02: One page reference was wrong (D-01: Table 6 is on PDF p.27, not 26). A per-page `pdftotext` search caught it.
+  Check page numbers by script, not by eye.

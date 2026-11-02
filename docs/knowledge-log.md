@@ -17,6 +17,11 @@
 | wheresryan22/anatomy | Tool | Explanatory isometric figures for the final report |
 | WHO e-EDL, edl.who-healthtechnologies.org ("Fifth WHO model list of essential IVDs (EDL 5)", © WHO 2025), fetched 2026-11-02 | Official list | All 234 recommendations → `data/who_edl5.csv`; test menu (Phase 2) |
 | WHO TRS 1053 (2023), 4th SAGE IVD report incl. EDL 4, iris.who.int/handle/10665/373322, pp. 127–146 | Official list | EDL 4 Tier I transcription → `data/who_edl4_tier1.csv` |
+| WHO Global hepatitis report 2024 (iris.who.int/handle/10665/376461), PDF pp. 72, 75 | Official report | HBsAg and anti-HCV RDT prices → `data/test_costs.csv` |
+| WHO Availability, price and affordability of health technologies for the management of diabetes (2025), Tables 4–6, 11 | Official report | Glucose strip, lancet, meter, HbA1c analyser prices; lowest day's wages |
+| Malar J 2022;21:12 (PMC8752184) | Peer-reviewed | Malaria RDT price (Global Fund purchases 2009–2018) |
+| Health Policy Open 2026;10:100172 (PMC13199886) | Peer-reviewed | HIV RDT and dual HIV/syphilis RDT prices |
+| Glob Health Epidemiol Genom 2019;4:e7 (PMC6749552) | Peer-reviewed | HbA1c and cholesterol POC cost per test (Haiti) |
 | WHO World health statistics 2024, Fig. 1.9 (source: WHO GHE 2021), iris.who.int/handle/10665/376869 | Official statistics | 2021 top-10 causes of death, LIC and LMIC → `data/who_ghe2021_top10_deaths.csv` |
 
 ## Tools
@@ -38,3 +43,8 @@
   edition a source is on before quoting it.
 - 2026-11-02: `ccx -v` exits with code 201, which stopped `tools/setup_cloud.sh` (set -o pipefail) before
   pytest ran. Fixed with `|| true`.
+- 2026-11-02: Official price-list hosts are blocked from the cloud: theglobalfund.org, supply.unicef.org,
+  clintonhealthaccess.org, finddx.org, msfaccess.org, stoptb.org (proxy 403; web-fetch DNS failure).
+  pmc.ncbi.nlm.nih.gov is reachable, but NCBI E-utilities are not. PMC shows a reCAPTCHA after a burst of
+  requests; wait and retry.
+- 2026-11-02: Quote extraction: `pdftotext` (raw) loses table rows that `pdftotext -layout` keeps. Check each quote against both.

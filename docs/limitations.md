@@ -34,3 +34,6 @@
 - Referral thresholds for BP, SpO2, glucose, Hb: no WHO guideline fetched yet.
 - Link between HBV/HCV and cirrhosis burden in LIC/LMIC: not sourced.
 - EDL 4 Tier I is a hand transcription of a PDF. It is cross-checked against the e-EDL but not against a second transcription.
+- Costs (Phase 2b): from WHO reports and peer-reviewed papers, not official price lists (blocked). Years and price types are mixed.
+  HbA1c ($6.52) and cholesterol ($8.57) come from one field study (Haiti, 2019). BP device price is not sourced.
+  Day's wage figures were "searched for on the internet and may not always be comparable" (WHO 2025 diabetes report).

@@ -1,10 +1,11 @@
 # Test Menu v0.1: Draft
 
-**Status:** Draft, for owner review. Built 2026-11-02 from official WHO sources. Cost and accuracy
-columns are not filled in yet (see "Gaps").
-**Data:** `data/test_menu.csv` (machine-readable), `data/README.md` (sources, licence).
-**Checked by:** `tests/test_test_menu_data.py` (T-001…T-007 in `docs/verification-log.md`).
-**Picture:** `docs/img/test_menu.png`
+**Status:** Draft. Built 2026-11-02 from official WHO sources. Owner approved D-007 (EDL 5) and D-008
+(first cartridge set) on 2026-11-02. Costs for the D-008 set added the same day (see "Cost per person").
+Accuracy is not filled in yet (see "Gaps").
+**Data:** `data/test_menu.csv`, `data/test_costs.csv`, `data/README.md` (sources, licence).
+**Checked by:** `tests/test_test_menu_data.py` (T-001…T-007), `tests/test_test_costs.py` (T-008…T-012).
+**Pictures:** `docs/img/test_menu.png`, `docs/img/test_costs.png`
 
 ![Test menu](img/test_menu.png)
 
@@ -15,7 +16,7 @@ columns are not filled in yet (see "Gaps").
    primary health care centre without laboratory, district hospital, …). I fetched both:
    - EDL 4 Tier I: 39 rows from WHO TRS 1053 (`data/who_edl4_tier1.csv`).
    - EDL 5 (all 234 rows, 39 Non-laboratory): `data/who_edl5.csv`.
-   The menu uses **EDL 5 Non-laboratory**, because it is the newer list. Proposed as D-007, needs owner OK.
+   The menu uses **EDL 5 Non-laboratory**, because it is the newer list. Approved by the owner as D-007.
 2. **Moving from EDL 4 Tier I to EDL 5** (from the row-by-row cross-check):
    - Moved to Laboratory: ABO/Rh slide agglutination, ESR, HBeAg (specimen also changed to serum/plasma),
      HIV qualitative and quantitative NAT, influenza NAT, hCG latex agglutination.
@@ -88,15 +89,59 @@ EDL ids link to `https://edl.who-healthtechnologies.org/recommendations/<id>`.
   station in the plan is confirmed as needed.
 - A small set of **handheld analysers** (glucose/HbA1c, Hb, cholesterol, creatinine) covers the
   noncommunicable-disease side. These are instrument tests in the EDL, not RDTs.
-- A suggested first cartridge set, all priority A and all capillary blood RDTs: **malaria, HIV,
-  HBsAg, anti-HCV**, plus syphilis (B, but it shares the dual HIV/syphilis RDT). For the NCD side:
-  **glucose/HbA1c and cholesterol**, plus the BP cuff. This is a proposal, not a decision.
+- **First cartridge set (D-008, owner approved):** malaria, HIV, HBsAg and anti-HCV rapid tests (all priority A,
+  all capillary blood), plus syphilis (B, but it shares the dual HIV/syphilis test). For the NCD side:
+  **glucose/HbA1c and cholesterol**, plus the BP cuff.
+
+## Cost per person for the D-008 set (Draft)
+**Where the prices come from.** The official price lists (Global Fund, UNICEF Supply Catalogue, CHAI, FIND) are blocked
+from the cloud. So every price below comes from a WHO report on IRIS or a peer-reviewed paper on PMC, with
+its exact quote stored in `data/test_costs.csv`.
+
+| Item (EDL 5 id) | USD per test | Basis, year | Source |
+|---|---|---|---|
+| Malaria RDT (34) | 0.323–0.718, median 0.473 | Global Fund-financed purchases, 2009–2018, 2018 USD (IQR) | Malar J 2022;21:12 (PMC8752184), Table 2 |
+| HIV antibody RDT (25) | "typically around $0.75–$0.80" | LMIC programmes | Health Policy Open 2026 (PMC13199886) |
+| Dual HIV/syphilis RDT (38) | 0.95 ceiling for a WHO-prequalified test; 1.31 weighted average paid | LMIC programmes | same |
+| HBsAg RDT (20) | about 1; range 0.09 (India) – 2.40 (Nigeria) | public sector, 2022 | WHO Global hepatitis report 2024, PDF p.72 |
+| Anti-HCV RDT (22) | 0.21–2.42 paid; benchmark 0.80–1.10 ex works (Global Fund PPM) | public sector, 2023 | same, PDF p.75 |
+| Glucose strip (4) | 0.06–0.88 (low-income countries); global average 0.29 | 2021; 2019 | WHO diabetes technologies report 2025, Table 4 |
+| Lancet | 0.01–0.17 | 2019–2020 | same, Table 5 |
+| HbA1c POC (19) | 6.52 | field study cost (Haiti), published 2019 | PMC6749552 |
+| Cholesterol POC (227) | 8.57 (CardioChek lipid test) | same study | PMC6749552 |
+| BP measurement | "negligible because equipment was reused" | same study | PMC6749552 |
+
+**Per person:** consumables only (`python3 tools/test_costs.py`). The days'-wage figures use the lowest daily
+wages in the WHO 2025 diabetes report, Table 11 (Kenya $3.18, Nigeria $1.24). The report says these were
+"searched for on the internet and may not always be comparable".
+
+| Panel (cumulative) | USD per person | Days' wages, Kenya | Days' wages, Nigeria |
+|---|---|---|---|
+| RDTs: malaria, dual HIV/syphilis, HBsAg, anti-HCV, + 1 lancet | 1.58–7.02 | 0.5–2.2 | 1.3–5.7 |
+| + blood glucose strip | 1.64–7.90 | 0.5–2.5 | 1.3–6.4 |
+| + HbA1c POC | 8.16–14.42 | 2.6–4.5 | 6.6–11.6 |
+| + cholesterol POC | 16.73–22.99 | 5.3–7.2 | 13.5–18.5 |
+
+![Test costs](img/test_costs.png)
+
+**What this shows**
+- **The four infection RDTs are cheap:** about $1.6–7 per person in total. The wide range comes from HBsAg and anti-HCV
+  prices paid by different countries.
+- **HbA1c and cholesterol make up 66–90% of the full panel cost.** Both figures come from a single field study, so they are
+  the weakest numbers here. They are also the best place to cut cost. Options to evaluate:
+  glucose strip first and HbA1c only if glucose is raised; cholesterol only for people at higher risk.
+  The referral rules must come from WHO guidelines (HEARTS‑D, on IRIS), not from us.
+- **What the per-person figure leaves out:** devices (glucose meter $11.83–29.32; cholesterol analyser $500, both sourced), staff,
+  shipping, import duty, quality control, waste, and the pod itself. A real price per visit will be higher.
+- **Caveat:** these figures mix years (2009–2026) and price types (procurement price, price paid, study cost).
+  Treat them as order of magnitude only, until one official price list covers every item.
 
 ## Gaps (also in `docs/limitations.md`)
 1. **GHE 2021 DALYs** by income group: blocked (www.who.int). Need the owner to allow `www.who.int`
    and `cdn.who.int`, or to download the GHE 2021 DALY spreadsheet on the PC and add it to `data/`.
-2. **Cost per test:** not sourced. Next sources: Global Fund Pooled Procurement price list, UNICEF
-   Supply Catalogue, WHO prequalification lists. None tried yet.
+2. **Cost per test:** a first pass is done for the D-008 set (above). It is still weak for HbA1c and cholesterol (one
+   study) and has no BP device price. Official lists (Global Fund PPM reference prices, UNICEF Supply Catalogue,
+   CHAI/FIND) need `www.theglobalfund.org`, `supply.unicef.org`, `www.clintonhealthaccess.org`, `www.finddx.org` allowed.
 3. **Accuracy per test:** each e-EDL page has a "Summary of Evidence Evaluation". These aren't extracted yet.
 4. **Camera reading of RDTs:** no evidence collected yet. Needs a literature search and our own bench test.
 5. **Referral thresholds** (BP, SpO2, glucose, Hb): must come from the relevant WHO guidelines on IRIS.
